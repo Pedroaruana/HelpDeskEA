@@ -89,6 +89,14 @@ Acesse **http://localhost:4200** no navegador.
 
 ---
 
+## Autor
+
+Desenvolvido por **Pedro Aruana**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Pedroaruana-181717?style=flat&logo=github&logoColor=white)](https://github.com/Pedroaruana)
+
+---
+
 ## Licença
 
 Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
