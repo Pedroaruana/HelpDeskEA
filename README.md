@@ -1,5 +1,7 @@
 # HelpDesk EA
 
+🔗 **[Ver projeto online](https://pedroaruana.github.io/HelpDeskEA/)**
+
 Sistema de gerenciamento de chamados de suporte técnico desenvolvido com Angular 17+, focado em produtividade e experiência do usuário.
 
 ![Angular](https://img.shields.io/badge/Angular-17+-DD0031?style=flat&logo=angular&logoColor=white)
