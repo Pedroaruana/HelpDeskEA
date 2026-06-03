@@ -1,59 +1,94 @@
-# HelpdeskEa
+# HelpDesk EA
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.13.
+Sistema de gerenciamento de chamados de suporte técnico desenvolvido com Angular 17+, focado em produtividade e experiência do usuário.
 
-## Development server
+![Angular](https://img.shields.io/badge/Angular-17+-DD0031?style=flat&logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)
+![Angular Material](https://img.shields.io/badge/Angular%20Material-17+-757575?style=flat&logo=material-design&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat)
 
-To start a local development server, run:
+---
 
-```bash
-ng serve
+## Sobre o projeto
+
+O **HelpDesk EA** é uma aplicação web para abertura, acompanhamento e resolução de chamados de suporte de T.I. O sistema permite que equipes de suporte gerenciem demandas de forma organizada, com visibilidade em tempo real do status e prioridade de cada chamado.
+
+Desenvolvido como projeto de portfólio para demonstrar habilidades em desenvolvimento front-end moderno e boas práticas de entrega de software.
+
+---
+
+## Funcionalidades
+
+- **Dashboard** — visão geral com métricas de chamados abertos, em andamento, resolvidos e críticos
+- **Lista de chamados** — tabela completa com busca por texto e filtros por status, prioridade e categoria
+- **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
+- **Novo chamado** — formulário para abertura de chamados com seleção de categoria e prioridade
+- **Navegação lateral** — sidebar com contador de chamados abertos em tempo real
+
+---
+
+## Tecnologias
+
+| Tecnologia | Descrição |
+|---|---|
+| Angular 17+ | Framework principal com Standalone Components e Signals |
+| Angular Material | Biblioteca de componentes de UI |
+| TypeScript | Tipagem estática |
+| SCSS | Estilização com tema dark personalizado |
+| GitHub Actions | Pipeline de CI/CD automatizado |
+| GitHub Pages | Hospedagem da aplicação em produção |
+
+---
+
+## Arquitetura
+
+```
+src/
+├── app/
+│   ├── models/           # Interfaces e tipos (Ticket, Comment, etc.)
+│   ├── services/         # Lógica de negócio com Signals
+│   └── components/
+│       ├── sidebar/      # Menu lateral de navegação
+│       ├── dashboard/    # Tela principal com estatísticas
+│       ├── ticket-list/  # Lista de chamados com filtros
+│       ├── ticket-detail/# Detalhe e gerenciamento do chamado
+│       └── new-ticket/   # Formulário de abertura
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## CI/CD
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+O projeto utiliza **GitHub Actions** para automatizar o processo de build e deploy:
 
-```bash
-ng generate component component-name
-```
+1. A cada `push` na branch `main`, o pipeline é acionado automaticamente
+2. Executa o lint do código
+3. Realiza o build de produção
+4. Faz o deploy automático no GitHub Pages
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## Como rodar localmente
 
-## Building
-
-To build the project run:
+**Pré-requisitos:** Node.js 18+ e Angular CLI instalados.
 
 ```bash
-ng build
+# Clonar o repositório
+git clone https://github.com/Pedroaruana/HelpDeskEA.git
+cd HelpDeskEA
+
+# Instalar dependências
+npm install
+
+# Iniciar servidor de desenvolvimento
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Acesse **http://localhost:4200** no navegador.
 
-## Running unit tests
+---
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Licença
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
