@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { Ticket, TicketStatus, TicketPriority, TicketCategory, DashboardStats } from '../models/ticket.model';
+import { Ticket, TicketStatus, DashboardStats } from '../models/ticket.model';
 
 const MOCK_TICKETS: Ticket[] = [
   {
