@@ -4,7 +4,6 @@ import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
-import { Ticket } from '../../models/ticket.model';
 
 @Component({
   selector: 'app-dashboard',

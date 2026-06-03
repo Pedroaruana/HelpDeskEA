@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
-import { TicketStatus, TicketPriority, TicketCategory } from '../../models/ticket.model';
 
 @Component({
   selector: 'app-ticket-list',

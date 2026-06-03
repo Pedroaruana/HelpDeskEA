@@ -1,11 +1,11 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
-import { Ticket, TicketStatus } from '../../models/ticket.model';
+import { TicketStatus } from '../../models/ticket.model';
 
 @Component({
   selector: 'app-ticket-detail',
