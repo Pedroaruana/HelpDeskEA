@@ -31,7 +31,7 @@ jobs:
         run: npm run lint
 
       - name: Build de produção
-        run: npm run build -- --base-href /helpdesk-ea/
+        run: npm run build -- --base-href /HelpDeskEA/
 
       - name: Deploy no GitHub Pages
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
