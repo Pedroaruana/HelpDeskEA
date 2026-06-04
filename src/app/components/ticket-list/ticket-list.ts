@@ -28,7 +28,7 @@ import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe } from '../../pip
         <div class="search-wrap">
           <mat-icon class="search-icon">search</mat-icon>
           <input class="search-input" placeholder="Buscar chamados..."
-            [value]="search()" (input)="search.set($any($event.target).value)" />
+            [value]="search()" (input)="onSearch($event)" />
         </div>
         <div class="filter-chips">
           @for (s of statusOptions; track s.value) {
@@ -37,14 +37,14 @@ import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe } from '../../pip
             </button>
           }
         </div>
-        <select class="select-filter" [value]="priorityFilter()" (change)="priorityFilter.set($any($event.target).value)">
+        <select class="select-filter" [value]="priorityFilter()" (change)="onPriorityChange($event)">
           <option value="">Todas prioridades</option>
           <option value="critical">Crítico</option>
           <option value="high">Alto</option>
           <option value="medium">Médio</option>
           <option value="low">Baixo</option>
         </select>
-        <select class="select-filter" [value]="categoryFilter()" (change)="categoryFilter.set($any($event.target).value)">
+        <select class="select-filter" [value]="categoryFilter()" (change)="onCategoryChange($event)">
           <option value="">Todas categorias</option>
           <option value="hardware">Hardware</option>
           <option value="software">Software</option>
@@ -240,5 +240,20 @@ export class TicketListComponent {
     });
   });
 
-  categoryIcon(c: string) { return ({ hardware: 'memory', software: 'code', network: 'wifi', access: 'lock', other: 'more_horiz' } as Record<string,string>)[c] ?? 'help'; }
+  onSearch(event: Event): void {
+    this.search.set((event.target as HTMLInputElement).value);
+  }
+
+  onPriorityChange(event: Event): void {
+    this.priorityFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  onCategoryChange(event: Event): void {
+    this.categoryFilter.set((event.target as HTMLSelectElement).value);
+  }
+
+  categoryIcon(c: string): string {
+    const icons: Record<string, string> = { hardware: 'memory', software: 'code', network: 'wifi', access: 'lock', other: 'more_horiz' };
+    return icons[c] ?? 'help';
+  }
 }
