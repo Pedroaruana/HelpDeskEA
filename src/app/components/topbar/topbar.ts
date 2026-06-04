@@ -62,15 +62,14 @@ import { TicketService } from '../../services/ticket.service';
   styles: [`
     .topbar {
       height: 64px;
-      background: #1a2744;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: #162032;
+      border-bottom: 2px solid rgba(99,102,241,0.3);
       display: flex;
       align-items: center;
       padding: 0 32px;
       gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      flex-shrink: 0;
+      width: 100%;
     }
 
     .search-container {
