@@ -149,10 +149,13 @@ export class TicketService {
 
   createTicket(data: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt' | 'comments'>): Ticket {
     const tickets = this._tickets();
-    const num = tickets.length + 1;
+    const existingNums = tickets
+      .map(t => parseInt(t.id.replace('TK-', ''), 10))
+      .filter(n => !isNaN(n));
+    const nextNum = existingNums.length > 0 ? Math.max(...existingNums) + 1 : 1;
     const ticket: Ticket = {
       ...data,
-      id: `TK-${String(num).padStart(3, '0')}`,
+      id: `TK-${String(nextNum).padStart(3, '0')}`,
       createdAt: new Date(),
       updatedAt: new Date(),
       comments: []

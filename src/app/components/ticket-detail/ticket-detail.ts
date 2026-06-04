@@ -1,4 +1,5 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -310,11 +311,12 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
     }
   `]
 })
-export class TicketDetailComponent implements OnInit {
+export class TicketDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private svc = inject(TicketService);
   private dialog = inject(MatDialog);
+  private subscriptions = new Subscription();
 
   ticketId = signal<string>('');
   newComment = '';
@@ -353,15 +355,24 @@ export class TicketDetailComponent implements OnInit {
       panelClass: 'custom-dialog',
       backdropClass: 'custom-backdrop'
     });
-    ref.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.svc.deleteTicket(this.ticketId());
-        this.router.navigate(['/tickets']);
-      }
-    });
+    this.subscriptions.add(
+      ref.afterClosed().subscribe(confirmed => {
+        if (confirmed) {
+          this.svc.deleteTicket(this.ticketId());
+          this.router.navigate(['/tickets']);
+        }
+      })
+    );
   }
 
-  initials(name: string) { return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+  initials(name: string): string {
+    if (!name?.trim()) return '??';
+    return name.trim().split(' ').map(n => n[0] ?? '').join('').slice(0, 2).toUpperCase();
+  }
   categoryLabel(c: string) { return { hardware: 'Hardware', software: 'Software', network: 'Rede', access: 'Acesso', other: 'Outros' }[c] ?? c; }
   priorityLabel(p: string) { return { critical: 'Crítico', high: 'Alto', medium: 'Médio', low: 'Baixo' }[p] ?? p; }
   statusLabel(s: string) { return { open: 'Aberto', 'in-progress': 'Em Andamento', resolved: 'Resolvido', closed: 'Fechado' }[s] ?? s; }
