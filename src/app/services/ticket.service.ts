@@ -182,4 +182,8 @@ export class TicketService {
       )
     );
   }
+
+  deleteTicket(id: string): void {
+    this._tickets.update(tickets => tickets.filter(t => t.id !== id));
+  }
 }
