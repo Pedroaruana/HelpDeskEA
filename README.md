@@ -14,9 +14,9 @@ Sistema de gerenciamento de chamados de suporte técnico desenvolvido com Angula
 
 ## Sobre o projeto
 
-O **HelpDesk EA** é uma aplicação web para abertura, acompanhamento e resolução de chamados de suporte de T.I. O sistema permite que equipes de suporte gerenciem demandas de forma organizada, com visibilidade em tempo real do status e prioridade de cada chamado.
+Trabalhei por um tempo em suporte de T.I e sempre senti falta de um sistema simples e rápido pra registrar e acompanhar chamados. Os sistemas que usava eram travados ou tinham interface ruim. Então resolvi construir o meu.
 
-Desenvolvido como projeto de portfólio para demonstrar habilidades em desenvolvimento front-end moderno e boas práticas de entrega de software.
+O **HelpDesk EA** é uma aplicação para abrir, acompanhar e resolver chamados de suporte. Foi meu primeiro projeto em Angular — usei ele pra aprender o framework enquanto construía algo que faz sentido pra mim.
 
 ---
 
