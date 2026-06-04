@@ -62,8 +62,8 @@ import { TicketService } from '../../services/ticket.service';
   styles: [`
     .topbar {
       height: 64px;
-      background: #0f172a;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: #1a2744;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
       display: flex;
       align-items: center;
       padding: 0 32px;
