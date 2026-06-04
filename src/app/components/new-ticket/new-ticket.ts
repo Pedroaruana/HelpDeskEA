@@ -34,14 +34,14 @@ import { TicketPriority, TicketCategory } from '../../models/ticket.model';
           <div class="form-group">
             <label>Título do Chamado <span class="required">*</span></label>
             <input class="form-input" [(ngModel)]="form.title" name="title"
-              placeholder="Descreva brevemente o problema..." required />
+              placeholder="Descreva brevemente o problema..." required maxlength="100" />
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label>Solicitante <span class="required">*</span></label>
               <input class="form-input" [(ngModel)]="form.requester" name="requester"
-                placeholder="Nome do solicitante..." required />
+                placeholder="Nome do solicitante..." required maxlength="60" />
             </div>
             <div class="form-group">
               <label>Responsável</label>
@@ -53,7 +53,7 @@ import { TicketPriority, TicketCategory } from '../../models/ticket.model';
           <div class="form-group">
             <label>Descrição detalhada <span class="required">*</span></label>
             <textarea class="form-input" [(ngModel)]="form.description" name="description"
-              placeholder="Descreva o problema com detalhes..." rows="4" required></textarea>
+              placeholder="Descreva o problema com detalhes..." rows="4" required maxlength="1000"></textarea>
           </div>
 
           <div class="form-row">

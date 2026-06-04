@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
+import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
   selector: 'app-ticket-list',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule],
+  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule, PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe],
   template: `
     <div class="page">
       <header class="page-header">
@@ -26,23 +27,24 @@ import { TicketService } from '../../services/ticket.service';
       <div class="filters-bar">
         <div class="search-wrap">
           <mat-icon class="search-icon">search</mat-icon>
-          <input class="search-input" placeholder="Buscar chamados..." [(ngModel)]="search" />
+          <input class="search-input" placeholder="Buscar chamados..."
+            [value]="search()" (input)="search.set($any($event.target).value)" />
         </div>
         <div class="filter-chips">
           @for (s of statusOptions; track s.value) {
-            <button class="chip" [class.active]="statusFilter() === s.value" (click)="setStatus(s.value)">
+            <button class="chip" [class.active]="statusFilter() === s.value" (click)="statusFilter.set(s.value)">
               {{ s.label }}
             </button>
           }
         </div>
-        <select class="select-filter" [(ngModel)]="priorityFilter">
+        <select class="select-filter" [value]="priorityFilter()" (change)="priorityFilter.set($any($event.target).value)">
           <option value="">Todas prioridades</option>
           <option value="critical">Crítico</option>
           <option value="high">Alto</option>
           <option value="medium">Médio</option>
           <option value="low">Baixo</option>
         </select>
-        <select class="select-filter" [(ngModel)]="categoryFilter">
+        <select class="select-filter" [value]="categoryFilter()" (change)="categoryFilter.set($any($event.target).value)">
           <option value="">Todas categorias</option>
           <option value="hardware">Hardware</option>
           <option value="software">Software</option>
@@ -76,13 +78,13 @@ import { TicketService } from '../../services/ticket.service';
             <span class="col-requester">{{ ticket.requester }}</span>
             <span class="col-cat">
               <mat-icon class="cat-icon {{ ticket.category }}">{{ categoryIcon(ticket.category) }}</mat-icon>
-              {{ categoryLabel(ticket.category) }}
+              {{ ticket.category | categoryLabel }}
             </span>
             <span class="col-priority">
-              <span class="badge priority-{{ ticket.priority }}">{{ priorityLabel(ticket.priority) }}</span>
+              <span class="badge priority-{{ ticket.priority }}">{{ ticket.priority | priorityLabel }}</span>
             </span>
             <span class="col-status">
-              <span class="badge status-{{ ticket.status }}">{{ statusLabel(ticket.status) }}</span>
+              <span class="badge status-{{ ticket.status }}">{{ ticket.status | statusLabel }}</span>
             </span>
             <span class="col-date">{{ ticket.createdAt | date:'dd/MM HH:mm' }}</span>
             <span class="col-arrow"><mat-icon>chevron_right</mat-icon></span>
@@ -214,10 +216,10 @@ import { TicketService } from '../../services/ticket.service';
 export class TicketListComponent {
   private svc = inject(TicketService);
 
-  search = '';
-  priorityFilter = '';
-  categoryFilter = '';
-  statusFilter = signal<string>('');
+  search = signal('');
+  priorityFilter = signal('');
+  categoryFilter = signal('');
+  statusFilter = signal('');
 
   statusOptions = [
     { value: '', label: 'Todos' },
@@ -227,21 +229,16 @@ export class TicketListComponent {
     { value: 'closed', label: 'Fechados' },
   ];
 
-  setStatus(v: string) { this.statusFilter.set(v); }
-
   filtered = computed(() => {
-    const q = this.search.toLowerCase();
+    const q = this.search().toLowerCase();
     return this.svc.tickets().filter(t => {
       if (this.statusFilter() && t.status !== this.statusFilter()) return false;
-      if (this.priorityFilter && t.priority !== this.priorityFilter) return false;
-      if (this.categoryFilter && t.category !== this.categoryFilter) return false;
+      if (this.priorityFilter() && t.priority !== this.priorityFilter()) return false;
+      if (this.categoryFilter() && t.category !== this.categoryFilter()) return false;
       if (q && !t.title.toLowerCase().includes(q) && !t.requester.toLowerCase().includes(q) && !t.id.toLowerCase().includes(q)) return false;
       return true;
     });
   });
 
-  categoryIcon(c: string) { return { hardware: 'memory', software: 'code', network: 'wifi', access: 'lock', other: 'more_horiz' }[c] ?? 'help'; }
-  categoryLabel(c: string) { return { hardware: 'Hardware', software: 'Software', network: 'Rede', access: 'Acesso', other: 'Outros' }[c] ?? c; }
-  priorityLabel(p: string) { return { critical: 'Crítico', high: 'Alto', medium: 'Médio', low: 'Baixo' }[p] ?? p; }
-  statusLabel(s: string) { return { open: 'Aberto', 'in-progress': 'Em Andamento', resolved: 'Resolvido', closed: 'Fechado' }[s] ?? s; }
+  categoryIcon(c: string) { return ({ hardware: 'memory', software: 'code', network: 'wifi', access: 'lock', other: 'more_horiz' } as Record<string,string>)[c] ?? 'help'; }
 }
