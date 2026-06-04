@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
+import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
   selector: 'app-topbar',
   standalone: true,
-  imports: [FormsModule, MatIconModule, MatRippleModule],
+  imports: [FormsModule, MatIconModule, MatRippleModule, PriorityLabelPipe, StatusLabelPipe],
   template: `
     <header class="topbar">
       <div class="search-container" [class.focused]="isFocused()">
@@ -37,8 +38,8 @@ import { TicketService } from '../../services/ticket.service';
                     <span class="result-title">{{ ticket.title }}</span>
                     <span class="result-meta">{{ ticket.requester }}</span>
                   </div>
-                  <span class="badge priority-{{ ticket.priority }}">{{ priorityLabel(ticket.priority) }}</span>
-                  <span class="badge status-{{ ticket.status }}">{{ statusLabel(ticket.status) }}</span>
+                  <span class="badge priority-{{ ticket.priority }}">{{ ticket.priority | priorityLabel }}</span>
+                  <span class="badge status-{{ ticket.status }}">{{ ticket.status | statusLabel }}</span>
                 </button>
               }
             } @else {
@@ -279,6 +280,4 @@ export class TopbarComponent {
     this.isFocused.set(false);
   }
 
-  priorityLabel(p: string) { return { critical: 'Crítico', high: 'Alto', medium: 'Médio', low: 'Baixo' }[p] ?? p; }
-  statusLabel(s: string) { return { open: 'Aberto', 'in-progress': 'Em Andamento', resolved: 'Resolvido', closed: 'Fechado' }[s] ?? s; }
 }

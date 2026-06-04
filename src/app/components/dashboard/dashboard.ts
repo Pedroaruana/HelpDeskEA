@@ -4,11 +4,12 @@ import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
+import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterLink, DatePipe, MatIconModule, MatRippleModule],
+  imports: [RouterLink, DatePipe, MatIconModule, MatRippleModule, PriorityLabelPipe, StatusLabelPipe],
   template: `
     <div class="page">
       <header class="page-header">
@@ -84,8 +85,8 @@ import { TicketService } from '../../services/ticket.service';
                   </div>
                 </div>
                 <div class="ticket-right">
-                  <span class="badge priority-{{ ticket.priority }}">{{ priorityLabel(ticket.priority) }}</span>
-                  <span class="badge status-{{ ticket.status }}">{{ statusLabel(ticket.status) }}</span>
+                  <span class="badge priority-{{ ticket.priority }}">{{ ticket.priority | priorityLabel }}</span>
+                  <span class="badge status-{{ ticket.status }}">{{ ticket.status | statusLabel }}</span>
                 </div>
               </a>
             }
@@ -282,11 +283,4 @@ export class DashboardComponent {
     });
   });
 
-  priorityLabel(p: string) {
-    return { critical: 'Crítico', high: 'Alto', medium: 'Médio', low: 'Baixo' }[p] ?? p;
-  }
-
-  statusLabel(s: string) {
-    return { open: 'Aberto', 'in-progress': 'Em Andamento', resolved: 'Resolvido', closed: 'Fechado' }[s] ?? s;
-  }
 }
