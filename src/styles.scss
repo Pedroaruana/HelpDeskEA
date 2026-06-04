@@ -35,3 +35,14 @@ textarea, input, select, button {
   font-family: inherit;
   box-sizing: border-box;
 }
+
+.custom-backdrop {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.custom-dialog .mat-mdc-dialog-container {
+  background: transparent;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+  border-radius: 16px;
+}

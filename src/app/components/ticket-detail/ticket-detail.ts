@@ -1,16 +1,18 @@
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TicketService } from '../../services/ticket.service';
 import { TicketStatus } from '../../models/ticket.model';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-ticket-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule],
+  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule, MatDialogModule],
   template: `
     @if (ticket()) {
       <div class="page">
@@ -21,6 +23,10 @@ import { TicketStatus } from '../../models/ticket.model';
           </a>
           <mat-icon class="sep">chevron_right</mat-icon>
           <span>{{ ticket()!.id }}</span>
+          <button class="btn-delete" (click)="deleteTicket()" matRipple>
+            <mat-icon>delete</mat-icon>
+            Excluir Chamado
+          </button>
         </div>
 
         <div class="detail-layout">
@@ -182,6 +188,18 @@ import { TicketStatus } from '../../models/ticket.model';
     }
     .sep { font-size: 16px; width: 16px; height: 16px; color: #334155; }
 
+    .btn-delete {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 9px;
+      border: 1px solid rgba(239,68,68,0.25);
+      background: rgba(239,68,68,0.08);
+      color: #f87171; font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: all 0.15s;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+      &:hover { background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.5); }
+    }
+
     .detail-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
     .main-col, .side-col { display: flex; flex-direction: column; gap: 16px; }
 
@@ -294,7 +312,9 @@ import { TicketStatus } from '../../models/ticket.model';
 })
 export class TicketDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private svc = inject(TicketService);
+  private dialog = inject(MatDialog);
 
   ticketId = signal<string>('');
   newComment = '';
@@ -320,6 +340,25 @@ export class TicketDetailComponent implements OnInit {
     if (!this.newComment.trim()) return;
     this.svc.addComment(this.ticketId(), this.newComment.trim(), 'Pedro Técnico');
     this.newComment = '';
+  }
+
+  deleteTicket() {
+    const ref = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: 'Excluir Chamado',
+        message: `Tem certeza que deseja excluir o chamado ${this.ticketId()}? Esta ação não pode ser desfeita.`,
+        confirmLabel: 'Sim, excluir',
+        cancelLabel: 'Cancelar'
+      },
+      panelClass: 'custom-dialog',
+      backdropClass: 'custom-backdrop'
+    });
+    ref.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.svc.deleteTicket(this.ticketId());
+        this.router.navigate(['/tickets']);
+      }
+    });
   }
 
   initials(name: string) { return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
