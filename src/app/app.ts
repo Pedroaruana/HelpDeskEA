@@ -4,6 +4,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from './components/sidebar/sidebar';
 import { TopbarComponent } from './components/topbar/topbar';
 import { TicketService } from './services/ticket.service';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -43,7 +44,8 @@ import { TicketService } from './services/ticket.service';
     .app-shell {
       display: flex;
       min-height: 100vh;
-      background: #0f172a;
+      background: var(--bg-base);
+      transition: background-color 0.25s ease;
     }
     .content-wrap {
       margin-left: 240px;
@@ -127,6 +129,7 @@ import { TicketService } from './services/ticket.service';
 })
 export class App {
   private svc = inject(TicketService);
+  readonly theme = inject(ThemeService); // inicializa o serviço e aplica o tema salvo
   dismissed = signal(false);
   criticalCount = computed(() =>
     this.svc.tickets().filter(t => t.priority === 'critical' && t.status !== 'resolved' && t.status !== 'closed').length

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
+import { ThemeService } from '../../services/theme.service';
 import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
@@ -57,20 +58,30 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
           <mat-icon>calendar_today</mat-icon>
           <span>{{ today }}</span>
         </div>
+
+        <button
+          class="theme-toggle"
+          (click)="theme.toggle()"
+          [title]="theme.tooltip()"
+          matRipple
+        >
+          <mat-icon>{{ theme.icon() }}</mat-icon>
+        </button>
       </div>
     </header>
   `,
   styles: [`
     .topbar {
       height: 64px;
-      background: #162032;
-      border-bottom: 2px solid rgba(99,102,241,0.3);
+      background: var(--bg-topbar);
+      border-bottom: 2px solid var(--border-topbar);
       display: flex;
       align-items: center;
       padding: 0 32px;
       gap: 16px;
       flex-shrink: 0;
       width: 100%;
+      transition: background-color 0.25s ease, border-color 0.25s ease;
     }
 
     .search-container {
@@ -87,7 +98,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       left: 14px;
       top: 50%;
       transform: translateY(-50%);
-      color: #475569;
+      color: var(--text-faint);
       font-size: 18px;
       width: 18px;
       height: 18px;
@@ -100,16 +111,16 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     .search-input {
       width: 100%;
       padding: 10px 40px 10px 44px;
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-input);
+      border: 1px solid var(--border-md);
       border-radius: 12px;
-      color: #e2e8f0;
+      color: var(--text-secondary);
       font-size: 14px;
       outline: none;
       transition: all 0.2s;
 
-      &:focus { border-color: #6366f1; background: #1e293b; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
-      &::placeholder { color: #334155; }
+      &:focus { border-color: #6366f1; background: var(--bg-input); box-shadow: 0 0 0 3px rgba(99,102,241,0.12); }
+      &::placeholder { color: var(--text-placeholder); }
     }
 
     .clear-btn {
@@ -119,7 +130,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: #475569;
+      color: var(--text-faint);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -127,7 +138,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       border-radius: 6px;
       transition: color 0.15s;
       mat-icon { font-size: 16px; width: 16px; height: 16px; }
-      &:hover { color: #94a3b8; }
+      &:hover { color: var(--text-muted); }
     }
 
     .dropdown {
@@ -135,8 +146,8 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       top: calc(100% + 8px);
       left: 0;
       right: 0;
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-card);
+      border: 1px solid var(--border-md);
       border-radius: 14px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.4);
       overflow: hidden;
@@ -157,13 +168,13 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       padding: 12px 16px;
       background: none;
       border: none;
-      border-top: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid var(--border);
       cursor: pointer;
       text-align: left;
       transition: background 0.12s;
 
       &:first-child { border-top: none; }
-      &:hover { background: rgba(255,255,255,0.03); }
+      &:hover { background: var(--hover-card); }
     }
 
     .result-id {
@@ -186,7 +197,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
 
     .result-title {
       font-size: 13px;
-      color: #e2e8f0;
+      color: var(--text-secondary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -194,7 +205,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
 
     .result-meta {
       font-size: 11px;
-      color: #475569;
+      color: var(--text-faint);
       margin-top: 1px;
     }
 
@@ -221,7 +232,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       align-items: center;
       gap: 10px;
       padding: 20px 16px;
-      color: #334155;
+      color: var(--text-dim);
       font-size: 13px;
       mat-icon { font-size: 20px; width: 20px; height: 20px; }
     }
@@ -229,7 +240,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     .topbar-right {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       margin-left: auto;
     }
 
@@ -238,8 +249,30 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       align-items: center;
       gap: 6px;
       font-size: 13px;
-      color: #475569;
+      color: var(--text-faint);
       mat-icon { font-size: 15px; width: 15px; height: 15px; }
+    }
+
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border-md);
+      background: none;
+      color: var(--text-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+      &:hover {
+        background: rgba(99,102,241,0.1);
+        color: #818cf8;
+        border-color: rgba(99,102,241,0.35);
+      }
     }
   `]
 })
@@ -247,6 +280,7 @@ export class TopbarComponent {
   private svc = inject(TicketService);
   private router = inject(Router);
   private el = inject(ElementRef);
+  readonly theme = inject(ThemeService);
 
   query = '';
   isFocused = signal(false);
@@ -279,5 +313,4 @@ export class TopbarComponent {
     this.query = '';
     this.isFocused.set(false);
   }
-
 }
