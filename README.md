@@ -48,15 +48,15 @@ Esse projeto também foi minha entrada no Angular de verdade. Aprendi bastante n
 
 ## Dificuldades
 
-Algumas coisas que travaram durante o desenvolvimento:
+Algumas coisas que não foram fáceis:
 
-**Configurar o CI/CD foi o pior.** Nunca tinha mexido com GitHub Actions antes. Passei um tempo bom tentando entender por que o build quebrava — no final era o `base-href` errado e uma flag `--legacy-peer-deps` que faltava por conta de conflito de versão do `@angular/animations`. Quando funcionou pela primeira vez foi uma sensação boa.
+**O deploy automático me deu trabalho.** Nunca tinha configurado isso antes e quebrou umas três vezes seguidas por motivos diferentes. Fui ajustando aos poucos até entender o que cada erro queria dizer. Quando funcionou pela primeira vez e vi o site no ar sozinho foi satisfatório.
 
-**Roteamento no GitHub Pages.** O Pages não entende rotas do Angular por padrão — qualquer URL direta retorna 404. A solução foi um arquivo `404.html` com um script que redireciona para o `index.html` mantendo a rota. Simples depois que entendi o problema.
+**As rotas quebravam fora da página inicial.** Se eu acessava qualquer outra tela direto pela URL, dava página não encontrada. Demorei pra entender que não era bug do meu código, era o jeito que o serviço de hospedagem funciona. Resolvi com um arquivo extra que redireciona tudo corretamente.
 
-**Aprender Signals na prática.** Os tutoriais falam de `signal()` e `computed()` de um jeito muito bonito, mas na hora de aplicar nos filtros reativos da lista de chamados não foi imediato. Precisei refatorar duas vezes até o código ficar do jeito que eu queria.
+**Entender o sistema de estado do Angular.** Li sobre isso antes de começar mas na prática foi diferente. Os filtros da lista de chamados não atualizavam do jeito certo, precisei refazer essa parte duas vezes até funcionar como eu queria.
 
-**CSS variables para o tema claro/escuro.** Antes de fazer o toggle, os componentes tinham cores fixas no código. Tive que mapear cada cor, criar variáveis CSS e substituir em todos os arquivos. Trabalhoso, mas ficou organizado.
+**O tema claro/escuro deu mais trabalho do que parecia.** Achei que ia ser rápido mas todos os componentes tinham as cores escritas direto no código. Tive que ir arquivo por arquivo trocando por variáveis. Chato de fazer, mas o resultado valeu.
 
 ---
 
