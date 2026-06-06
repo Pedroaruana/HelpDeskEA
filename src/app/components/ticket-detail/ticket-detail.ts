@@ -180,14 +180,14 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 
     .breadcrumb {
       display: flex; align-items: center; gap: 8px; margin-bottom: 24px;
-      font-size: 13px; color: #475569;
+      font-size: 13px; color: var(--text-faint);
     }
     .back-link {
       display: flex; align-items: center; gap: 4px; color: #6366f1; text-decoration: none;
       &:hover { color: #818cf8; }
       mat-icon { font-size: 18px; width: 18px; height: 18px; }
     }
-    .sep { font-size: 16px; width: 16px; height: 16px; color: #334155; }
+    .sep { font-size: 16px; width: 16px; height: 16px; color: var(--text-dim); }
 
     .btn-delete {
       margin-left: auto;
@@ -205,7 +205,8 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
     .main-col, .side-col { display: flex; flex-direction: column; gap: 16px; }
 
     .card {
-      background: #1e293b; border-radius: 14px; border: 1px solid rgba(255,255,255,0.06); padding: 24px;
+      background: var(--bg-card); border-radius: 14px; border: 1px solid var(--border); padding: 24px;
+      transition: background-color 0.25s ease;
     }
 
     .ticket-header {
@@ -213,22 +214,22 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
     }
     .header-left { flex: 1; }
     .ticket-id { font-size: 12px; font-weight: 700; color: #6366f1; background: rgba(99,102,241,0.12); padding: 3px 8px; border-radius: 6px; }
-    h1 { font-size: 20px; font-weight: 700; color: #f1f5f9; margin: 8px 0 0; }
+    h1 { font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 8px 0 0; }
     .badges { display: flex; gap: 8px; flex-shrink: 0; }
 
-    .description { font-size: 14px; color: #94a3b8; line-height: 1.6; margin: 0 0 20px; }
+    .description { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin: 0 0 20px; }
 
     .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .info-item {
       display: flex; align-items: flex-start; gap: 10px;
-      mat-icon { color: #475569; font-size: 18px; width: 18px; height: 18px; margin-top: 2px; }
+      mat-icon { color: var(--text-faint); font-size: 18px; width: 18px; height: 18px; margin-top: 2px; }
       div { display: flex; flex-direction: column; }
     }
-    .info-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; }
-    .info-value { font-size: 13px; color: #e2e8f0; margin-top: 2px; }
+    .info-label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-value { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
-    h2 { font-size: 16px; font-weight: 600; color: #e2e8f0; margin: 0 0 16px; }
-    h3 { font-size: 14px; font-weight: 600; color: #94a3b8; margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.05em; }
+    h2 { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin: 0 0 16px; }
+    h3 { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.05em; }
 
     .comments-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
     .comment { display: flex; gap: 12px; }
@@ -240,17 +241,18 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
     }
     .comment-body { flex: 1; }
     .comment-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-    .comment-author { font-size: 13px; font-weight: 600; color: #e2e8f0; }
-    .comment-time { font-size: 11px; color: #475569; }
-    .comment-text { font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5; }
-    .no-comments { font-size: 13px; color: #334155; }
+    .comment-author { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+    .comment-time { font-size: 11px; color: var(--text-faint); }
+    .comment-text { font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5; }
+    .no-comments { font-size: 13px; color: var(--text-dim); }
 
     .add-comment { display: flex; flex-direction: column; gap: 10px; }
     .comment-input {
-      width: 100%; padding: 12px; background: #0f172a; border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px; color: #e2e8f0; font-size: 13px; outline: none; resize: none;
+      width: 100%; padding: 12px; background: var(--bg-input-deep); border: 1px solid var(--border-md);
+      border-radius: 10px; color: var(--text-secondary); font-size: 13px; outline: none; resize: none;
+      transition: border-color 0.2s, background-color 0.25s;
       &:focus { border-color: #6366f1; }
-      &::placeholder { color: #334155; }
+      &::placeholder { color: var(--text-placeholder); }
     }
     .btn-primary {
       align-self: flex-end; display: flex; align-items: center; gap: 6px;
@@ -264,8 +266,8 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
     .status-actions { display: flex; flex-direction: column; gap: 8px; }
     .status-btn {
       display: flex; align-items: center; gap: 10px; padding: 11px 14px;
-      border-radius: 9px; border: 1px solid rgba(255,255,255,0.06);
-      background: rgba(255,255,255,0.02); color: #64748b;
+      border-radius: 9px; border: 1px solid var(--status-btn-bd);
+      background: var(--status-btn-bg); color: var(--text-subtle);
       font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
       mat-icon { font-size: 17px; width: 17px; height: 17px; }
 
@@ -280,7 +282,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
       &:last-child { padding-bottom: 0; }
       &:not(:last-child)::before {
         content: ''; position: absolute; left: 7px; top: 16px; bottom: 0;
-        width: 2px; background: rgba(255,255,255,0.06);
+        width: 2px; background: var(--timeline-line);
       }
     }
     .tl-dot {
@@ -290,8 +292,8 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
       &.resolved { background: #4ade80; box-shadow: 0 0 8px rgba(34,197,94,0.4); }
     }
     .tl-content { display: flex; flex-direction: column; }
-    .tl-label { font-size: 13px; color: #e2e8f0; }
-    .tl-time { font-size: 11px; color: #475569; }
+    .tl-label { font-size: 13px; color: var(--text-secondary); }
+    .tl-time { font-size: 11px; color: var(--text-faint); }
 
     .badge { font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 6px; }
     .priority-critical { background: rgba(239,68,68,0.15); color: #f87171; }
@@ -305,9 +307,9 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 
     .not-found {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 60vh; gap: 12px; color: #334155;
+      height: 60vh; gap: 12px; color: var(--text-dim);
       mat-icon { font-size: 56px; width: 56px; height: 56px; }
-      h2 { color: #475569; margin: 0; }
+      h2 { color: var(--text-faint); margin: 0; }
     }
   `]
 })

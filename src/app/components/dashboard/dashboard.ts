@@ -124,8 +124,8 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       justify-content: space-between;
       margin-bottom: 32px;
 
-      h1 { font-size: 28px; font-weight: 700; color: #f1f5f9; margin: 0; }
-      .subtitle { color: #64748b; margin: 4px 0 0; font-size: 14px; }
+      h1 { font-size: 28px; font-weight: 700; color: var(--text-primary); margin: 0; }
+      .subtitle { color: var(--text-subtle); margin: 4px 0 0; font-size: 14px; }
     }
 
     .btn-primary {
@@ -153,14 +153,14 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     }
 
     .stat-card {
-      background: #1e293b;
+      background: var(--bg-card);
       border-radius: 14px;
       padding: 20px;
       display: flex;
       align-items: center;
       gap: 16px;
-      border: 1px solid rgba(255,255,255,0.06);
-      transition: transform 0.2s;
+      border: 1px solid var(--border);
+      transition: transform 0.2s, background-color 0.25s ease;
       &:hover { transform: translateY(-2px); }
     }
 
@@ -179,8 +179,8 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     .avg .stat-icon { background: rgba(168,85,247,0.15); mat-icon { color: #c084fc; } }
 
     .stat-info { display: flex; flex-direction: column; }
-    .stat-value { font-size: 30px; font-weight: 700; color: #f1f5f9; line-height: 1; }
-    .stat-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+    .stat-value { font-size: 30px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+    .stat-label { font-size: 12px; color: var(--text-subtle); margin-top: 4px; }
 
     .bottom-grid {
       display: grid;
@@ -189,10 +189,11 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     }
 
     .card {
-      background: #1e293b;
+      background: var(--bg-card);
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
       overflow: hidden;
+      transition: background-color 0.25s ease;
     }
 
     .card-header {
@@ -200,7 +201,7 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       align-items: center;
       justify-content: space-between;
       padding: 20px 20px 12px;
-      h2 { font-size: 16px; font-weight: 600; color: #e2e8f0; margin: 0; }
+      h2 { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin: 0; }
       .link-all { font-size: 13px; color: #6366f1; text-decoration: none; &:hover { color: #818cf8; } }
     }
 
@@ -209,17 +210,17 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       align-items: center;
       justify-content: space-between;
       padding: 12px 20px;
-      border-top: 1px solid rgba(255,255,255,0.04);
+      border-top: 1px solid var(--border);
       text-decoration: none;
       cursor: pointer;
       transition: background 0.15s;
-      &:hover { background: rgba(255,255,255,0.03); }
+      &:hover { background: var(--hover-card); }
     }
 
     .ticket-left { display: flex; align-items: center; gap: 12px; }
     .ticket-id { font-size: 11px; font-weight: 700; color: #6366f1; background: rgba(99,102,241,0.12); padding: 3px 7px; border-radius: 6px; white-space: nowrap; }
-    .ticket-title { font-size: 13px; color: #e2e8f0; margin: 0 0 2px; }
-    .ticket-meta { font-size: 11px; color: #475569; margin: 0; }
+    .ticket-title { font-size: 13px; color: var(--text-secondary); margin: 0 0 2px; }
+    .ticket-meta { font-size: 11px; color: var(--text-faint); margin: 0; }
     .ticket-right { display: flex; gap: 6px; flex-shrink: 0; }
 
     .badge {
@@ -251,12 +252,12 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     .cat-icon.network { color: #60a5fa; }
     .cat-icon.access { color: #4ade80; }
     .cat-icon.other { color: #94a3b8; }
-    .cat-name { font-size: 13px; color: #94a3b8; }
+    .cat-name { font-size: 13px; color: var(--text-muted); }
 
-    .cat-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 99px; overflow: hidden; }
+    .cat-bar-wrap { flex: 1; height: 6px; background: var(--cat-bar-bg); border-radius: 99px; overflow: hidden; }
     .cat-bar { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 99px; transition: width 0.6s ease; }
 
-    .cat-count { font-size: 13px; font-weight: 600; color: #e2e8f0; width: 20px; text-align: right; flex-shrink: 0; }
+    .cat-count { font-size: 13px; font-weight: 600; color: var(--text-secondary); width: 20px; text-align: right; flex-shrink: 0; }
   `]
 })
 export class DashboardComponent {

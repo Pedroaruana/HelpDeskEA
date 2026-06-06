@@ -12,30 +12,113 @@ html {
   ));
 }
 
+/* ─── CSS Custom Properties ─────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* Backgrounds */
+  --bg-base:        #0f172a;
+  --bg-card:        #1e293b;
+  --bg-topbar:      #162032;
+  --bg-input:       #1e293b;
+  --bg-input-deep:  #0f172a;
+
+  /* Text */
+  --text-primary:     #f1f5f9;
+  --text-secondary:   #e2e8f0;
+  --text-muted:       #94a3b8;
+  --text-subtle:      #64748b;
+  --text-faint:       #475569;
+  --text-placeholder: #334155;
+  --text-dim:         #334155;
+
+  /* Borders */
+  --border:        rgba(255,255,255,0.06);
+  --border-md:     rgba(255,255,255,0.08);
+  --border-topbar: rgba(99,102,241,0.30);
+
+  /* Interactive / misc */
+  --hover-row:        rgba(255,255,255,0.02);
+  --hover-card:       rgba(255,255,255,0.03);
+  --table-header-bg:  rgba(0,0,0,0.20);
+  --timeline-line:    rgba(255,255,255,0.06);
+  --status-btn-bg:    rgba(255,255,255,0.02);
+  --status-btn-bd:    rgba(255,255,255,0.06);
+  --cat-bar-bg:       rgba(255,255,255,0.06);
+  --chip-bg:          #1e293b;
+  --cancel-btn-bg:    rgba(255,255,255,0.04);
+  --cancel-btn-bd:    rgba(255,255,255,0.08);
+}
+
+.light-theme {
+  color-scheme: light;
+
+  --bg-base:        #f1f5f9;
+  --bg-card:        #ffffff;
+  --bg-topbar:      #ffffff;
+  --bg-input:       #f8fafc;
+  --bg-input-deep:  #f1f5f9;
+
+  --text-primary:     #0f172a;
+  --text-secondary:   #1e293b;
+  --text-muted:       #475569;
+  --text-subtle:      #64748b;
+  --text-faint:       #94a3b8;
+  --text-placeholder: #94a3b8;
+  --text-dim:         #cbd5e1;
+
+  --border:        rgba(0,0,0,0.07);
+  --border-md:     rgba(0,0,0,0.10);
+  --border-topbar: rgba(99,102,241,0.15);
+
+  --hover-row:       rgba(0,0,0,0.02);
+  --hover-card:      rgba(0,0,0,0.02);
+  --table-header-bg: rgba(0,0,0,0.03);
+  --timeline-line:   rgba(0,0,0,0.08);
+  --status-btn-bg:   rgba(0,0,0,0.02);
+  --status-btn-bd:   rgba(0,0,0,0.08);
+  --cat-bar-bg:      rgba(0,0,0,0.07);
+  --chip-bg:         #f1f5f9;
+  --cancel-btn-bg:   rgba(0,0,0,0.04);
+  --cancel-btn-bd:   rgba(0,0,0,0.08);
+}
+
+/* ─── Base ───────────────────────────────────────────────── */
 * {
   box-sizing: border-box;
 }
 
+html, body {
+  transition: background-color 0.25s ease, color 0.2s ease;
+}
+
 body {
-  color-scheme: dark;
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: var(--bg-base);
+  color: var(--text-secondary);
   font-family: 'Inter', 'Roboto', sans-serif;
   margin: 0;
   height: 100%;
   -webkit-font-smoothing: antialiased;
 }
 
+/* ─── Scrollbar ──────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar-thumb {
+  background: var(--border-md);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
 
+/* ─── Global resets ──────────────────────────────────────── */
 textarea, input, select, button {
   font-family: inherit;
   box-sizing: border-box;
 }
 
+/* ─── Dialog helpers ─────────────────────────────────────── */
 .custom-backdrop {
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
