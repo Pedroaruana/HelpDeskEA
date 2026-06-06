@@ -1,8 +1,6 @@
 # HelpDesk EA
 
-🔗 **[Ver projeto online](https://pedroaruana.github.io/HelpDeskEA/)**
-
-Sistema de gerenciamento de chamados de suporte técnico desenvolvido com Angular 17+, focado em produtividade e experiência do usuário.
+🔗 **[Acessar o projeto](https://pedroaruana.github.io/HelpDeskEA/)**
 
 ![Angular](https://img.shields.io/badge/Angular-17+-DD0031?style=flat&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)
@@ -14,32 +12,51 @@ Sistema de gerenciamento de chamados de suporte técnico desenvolvido com Angula
 
 ## Sobre o projeto
 
-Trabalhei por um tempo em suporte de T.I e sempre senti falta de um sistema simples e rápido pra registrar e acompanhar chamados. Os sistemas que usava eram travados ou tinham interface ruim. Então resolvi construir o meu.
+Trabalho com suporte de T.I e sempre tive uma reclamação com os sistemas que a gente usa no dia a dia: são lentos, feios ou cheios de coisa que ninguém usa. Quis construir algo do zero que fizesse sentido pra mim — simples, rápido e com uma interface que não desse vergonha de mostrar.
 
-O **HelpDesk EA** é uma aplicação para abrir, acompanhar e resolver chamados de suporte. Foi meu primeiro projeto em Angular — usei ele pra aprender o framework enquanto construía algo que faz sentido pra mim.
+O HelpDesk EA é um sistema para abertura e acompanhamento de chamados de suporte. Ele tem dashboard com métricas, lista de chamados com filtros, detalhe com linha do tempo e comentários, formulário de abertura e busca global. Tudo com tema escuro e claro, deploy automático via GitHub Actions, e código organizado com Angular 17.
+
+Esse projeto também foi minha entrada no Angular de verdade. Aprendi bastante na prática.
 
 ---
 
 ## Funcionalidades
 
-- **Dashboard** — visão geral com métricas de chamados abertos, em andamento, resolvidos e críticos
-- **Lista de chamados** — tabela completa com busca por texto e filtros por status, prioridade e categoria
+- **Dashboard** — métricas de chamados em tempo real: abertos, em andamento, resolvidos e críticos
+- **Lista de chamados** — tabela com busca por texto e filtros por status, prioridade e categoria
 - **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
-- **Novo chamado** — formulário para abertura de chamados com seleção de categoria e prioridade
-- **Navegação lateral** — sidebar com contador de chamados abertos em tempo real
+- **Novo chamado** — formulário de abertura com seleção de categoria e prioridade
+- **Busca global** — campo no topo que encontra qualquer chamado pelo título, ID ou solicitante
+- **Excluir chamado** — com confirmação para evitar acidentes
+- **Notificação de críticos** — banner de alerta quando há chamados críticos em aberto
+- **Tema claro/escuro** — toggle salvo automaticamente no navegador
 
 ---
 
 ## Tecnologias
 
-| Tecnologia | Descrição |
+| Tecnologia | Por que usei |
 |---|---|
-| Angular 17+ | Framework principal com Standalone Components e Signals |
-| Angular Material | Biblioteca de componentes de UI |
-| TypeScript | Tipagem estática |
-| SCSS | Estilização com tema dark personalizado |
-| GitHub Actions | Pipeline de CI/CD automatizado |
-| GitHub Pages | Hospedagem da aplicação em produção |
+| Angular 17+ | Framework principal — queria aprender de verdade, não só tutoriais |
+| Angular Material | Componentes prontos com visual consistente |
+| TypeScript | Tipagem forte, menos bug em produção |
+| Angular Signals | Estado reativo sem RxJS desnecessário |
+| GitHub Actions | CI/CD automático: lint → build → deploy |
+| GitHub Pages | Hospedagem gratuita, deploy sem complicação |
+
+---
+
+## Dificuldades
+
+Algumas coisas que travaram durante o desenvolvimento:
+
+**Configurar o CI/CD foi o pior.** Nunca tinha mexido com GitHub Actions antes. Passei um tempo bom tentando entender por que o build quebrava — no final era o `base-href` errado e uma flag `--legacy-peer-deps` que faltava por conta de conflito de versão do `@angular/animations`. Quando funcionou pela primeira vez foi uma sensação boa.
+
+**Roteamento no GitHub Pages.** O Pages não entende rotas do Angular por padrão — qualquer URL direta retorna 404. A solução foi um arquivo `404.html` com um script que redireciona para o `index.html` mantendo a rota. Simples depois que entendi o problema.
+
+**Aprender Signals na prática.** Os tutoriais falam de `signal()` e `computed()` de um jeito muito bonito, mas na hora de aplicar nos filtros reativos da lista de chamados não foi imediato. Precisei refatorar duas vezes até o código ficar do jeito que eu queria.
+
+**CSS variables para o tema claro/escuro.** Antes de fazer o toggle, os componentes tinham cores fixas no código. Tive que mapear cada cor, criar variáveis CSS e substituir em todos os arquivos. Trabalhoso, mas ficou organizado.
 
 ---
 
@@ -48,52 +65,48 @@ O **HelpDesk EA** é uma aplicação para abrir, acompanhar e resolver chamados 
 ```
 src/
 ├── app/
-│   ├── models/           # Interfaces e tipos (Ticket, Comment, etc.)
+│   ├── models/           # Tipos e interfaces (Ticket, Comment...)
 │   ├── services/         # Lógica de negócio com Signals
 │   └── components/
-│       ├── sidebar/      # Menu lateral de navegação
+│       ├── sidebar/      # Menu lateral
+│       ├── topbar/       # Barra superior com busca e toggle de tema
 │       ├── dashboard/    # Tela principal com estatísticas
-│       ├── ticket-list/  # Lista de chamados com filtros
+│       ├── ticket-list/  # Lista com filtros
 │       ├── ticket-detail/# Detalhe e gerenciamento do chamado
-│       └── new-ticket/   # Formulário de abertura
+│       ├── new-ticket/   # Formulário de abertura
+│       └── confirm-dialog/ # Modal de confirmação reutilizável
 ```
 
 ---
 
 ## CI/CD
 
-O projeto utiliza **GitHub Actions** para automatizar o processo de build e deploy:
+A cada `push` na branch `main`:
 
-1. A cada `push` na branch `main`, o pipeline é acionado automaticamente
-2. Executa o lint do código
-3. Realiza o build de produção
-4. Faz o deploy automático no GitHub Pages
+1. Executa o lint do código
+2. Faz o build de produção
+3. Publica automaticamente no GitHub Pages
 
 ---
 
 ## Como rodar localmente
 
-**Pré-requisitos:** Node.js 18+ e Angular CLI instalados.
+Precisar ter Node.js 18+ e Angular CLI instalados.
 
 ```bash
-# Clonar o repositório
 git clone https://github.com/Pedroaruana/HelpDeskEA.git
 cd HelpDeskEA
-
-# Instalar dependências
 npm install
-
-# Iniciar servidor de desenvolvimento
 npm start
 ```
 
-Acesse **http://localhost:4200** no navegador.
+Abre no navegador: **http://localhost:4200**
 
 ---
 
 ## Autor
 
-Desenvolvido por **Pedro Aruana**
+Feito por **Pedro Aruana** — técnico de suporte T.I
 
 [![GitHub](https://img.shields.io/badge/GitHub-Pedroaruana-181717?style=flat&logo=github&logoColor=white)](https://github.com/Pedroaruana)
 
