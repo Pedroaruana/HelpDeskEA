@@ -5,12 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
-import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe } from '../../pipes/ticket-labels.pipe';
+import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe, TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
   selector: 'app-ticket-list',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule, PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe],
+  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule, PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe, TimeAgoPipe],
   template: `
     <div class="page">
       <header class="page-header">
@@ -86,7 +86,10 @@ import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe } from '../../pip
             <span class="col-status">
               <span class="badge status-{{ ticket.status }}">{{ ticket.status | statusLabel }}</span>
             </span>
-            <span class="col-date">{{ ticket.createdAt | date:'dd/MM HH:mm' }}</span>
+            <span class="col-date">
+              <span class="date-ago">{{ ticket.createdAt | timeAgo }}</span>
+              <span class="date-fmt">{{ ticket.createdAt | date:'dd/MM HH:mm' }}</span>
+            </span>
             <span class="col-arrow"><mat-icon>chevron_right</mat-icon></span>
           </a>
         }
@@ -206,7 +209,11 @@ import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe } from '../../pip
     .status-resolved { background: rgba(34,197,94,0.12); color: #4ade80; }
     .status-closed { background: rgba(100,116,139,0.12); color: #94a3b8; }
 
-    .col-date { font-size: 12px; color: var(--text-faint); }
+    .col-date {
+      display: flex; flex-direction: column; gap: 2px;
+      .date-ago { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+      .date-fmt { font-size: 11px; color: var(--text-faint); }
+    }
     .col-arrow { color: var(--text-dim); display: flex; align-items: center; }
 
     .empty-state {
