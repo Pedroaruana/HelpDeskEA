@@ -9,11 +9,12 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TicketService } from '../../services/ticket.service';
 import { TicketStatus } from '../../models/ticket.model';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
+import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
   selector: 'app-ticket-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule, MatDialogModule],
+  imports: [RouterLink, DatePipe, FormsModule, MatIconModule, MatRippleModule, MatDialogModule, TimeAgoPipe],
   template: `
     @if (ticket()) {
       <div class="page">
@@ -73,6 +74,13 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
                   <div>
                     <span class="info-label">Aberto em</span>
                     <span class="info-value">{{ ticket()!.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                </div>
+                <div class="info-item">
+                  <mat-icon>timer</mat-icon>
+                  <div>
+                    <span class="info-label">Tempo aberto</span>
+                    <span class="info-value time-ago">{{ ticket()!.createdAt | timeAgo }}</span>
                   </div>
                 </div>
                 @if (ticket()!.resolvedAt) {
@@ -227,6 +235,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
     }
     .info-label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
     .info-value { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .info-value.time-ago { color: #818cf8; font-weight: 600; }
 
     h2 { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin: 0 0 16px; }
     h3 { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 0 0 16px; text-transform: uppercase; letter-spacing: 0.05em; }
