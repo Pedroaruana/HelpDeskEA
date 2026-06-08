@@ -7,6 +7,9 @@ import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
 import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe, TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
 
+const PRIORITY_ORDER: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolved: 2, closed: 3 };
+
 @Component({
   selector: 'app-ticket-list',
   standalone: true,
@@ -56,13 +59,25 @@ import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe, TimeAgoPipe } fr
 
       <div class="ticket-table">
         <div class="table-header">
-          <span>ID</span>
-          <span>Título</span>
-          <span>Solicitante</span>
+          <button class="sort-btn" [class.active]="sortCol() === 'id'" (click)="setSort('id')">
+            ID <mat-icon>{{ sortIcon('id') }}</mat-icon>
+          </button>
+          <button class="sort-btn" [class.active]="sortCol() === 'title'" (click)="setSort('title')">
+            Título <mat-icon>{{ sortIcon('title') }}</mat-icon>
+          </button>
+          <button class="sort-btn" [class.active]="sortCol() === 'requester'" (click)="setSort('requester')">
+            Solicitante <mat-icon>{{ sortIcon('requester') }}</mat-icon>
+          </button>
           <span>Categoria</span>
-          <span>Prioridade</span>
-          <span>Status</span>
-          <span>Data</span>
+          <button class="sort-btn" [class.active]="sortCol() === 'priority'" (click)="setSort('priority')">
+            Prioridade <mat-icon>{{ sortIcon('priority') }}</mat-icon>
+          </button>
+          <button class="sort-btn" [class.active]="sortCol() === 'status'" (click)="setSort('status')">
+            Status <mat-icon>{{ sortIcon('status') }}</mat-icon>
+          </button>
+          <button class="sort-btn" [class.active]="sortCol() === 'createdAt'" (click)="setSort('createdAt')">
+            Data <mat-icon>{{ sortIcon('createdAt') }}</mat-icon>
+          </button>
           <span></span>
         </div>
 
@@ -164,8 +179,30 @@ import { PriorityLabelPipe, StatusLabelPipe, CategoryLabelPipe, TimeAgoPipe } fr
 
     .table-header {
       display: grid; grid-template-columns: 80px 1fr 130px 110px 100px 130px 100px 32px;
-      padding: 12px 20px; background: var(--table-header-bg);
-      font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; gap: 12px;
+      padding: 4px 20px; background: var(--table-header-bg);
+      font-size: 11px; font-weight: 600; color: var(--text-faint);
+      text-transform: uppercase; letter-spacing: 0.05em; gap: 12px;
+      align-items: center;
+
+      span { padding: 8px 0; }
+    }
+
+    .sort-btn {
+      display: flex; align-items: center; gap: 3px;
+      background: none; border: none; cursor: pointer;
+      font-size: 11px; font-weight: 600; color: var(--text-faint);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 8px 6px; border-radius: 6px;
+      transition: all 0.15s; white-space: nowrap;
+
+      mat-icon { font-size: 14px; width: 14px; height: 14px; opacity: 0.4; transition: opacity 0.15s; }
+
+      &:hover { color: var(--text-muted); background: var(--hover-row);
+        mat-icon { opacity: 0.7; }
+      }
+      &.active { color: #818cf8;
+        mat-icon { opacity: 1; color: #818cf8; }
+      }
     }
 
     .table-row {
@@ -231,6 +268,8 @@ export class TicketListComponent {
   priorityFilter = signal('');
   categoryFilter = signal('');
   statusFilter = signal('');
+  sortCol = signal<string>('createdAt');
+  sortDir = signal<'asc' | 'desc'>('desc');
 
   statusOptions = [
     { value: '', label: 'Todos' },
@@ -242,14 +281,49 @@ export class TicketListComponent {
 
   filtered = computed(() => {
     const q = this.search().toLowerCase();
-    return this.svc.tickets().filter(t => {
+    const col = this.sortCol();
+    const dir = this.sortDir();
+
+    const result = this.svc.tickets().filter(t => {
       if (this.statusFilter() && t.status !== this.statusFilter()) return false;
       if (this.priorityFilter() && t.priority !== this.priorityFilter()) return false;
       if (this.categoryFilter() && t.category !== this.categoryFilter()) return false;
       if (q && !t.title.toLowerCase().includes(q) && !t.requester.toLowerCase().includes(q) && !t.id.toLowerCase().includes(q)) return false;
       return true;
     });
+
+    return [...result].sort((a, b) => {
+      let cmp = 0;
+      if (col === 'id') {
+        cmp = a.id.localeCompare(b.id);
+      } else if (col === 'title') {
+        cmp = a.title.localeCompare(b.title, 'pt-BR');
+      } else if (col === 'requester') {
+        cmp = a.requester.localeCompare(b.requester, 'pt-BR');
+      } else if (col === 'priority') {
+        cmp = (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9);
+      } else if (col === 'status') {
+        cmp = (STATUS_ORDER[a.status] ?? 9) - (STATUS_ORDER[b.status] ?? 9);
+      } else if (col === 'createdAt') {
+        cmp = a.createdAt.getTime() - b.createdAt.getTime();
+      }
+      return dir === 'asc' ? cmp : -cmp;
+    });
   });
+
+  setSort(col: string): void {
+    if (this.sortCol() === col) {
+      this.sortDir.update(d => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortCol.set(col);
+      this.sortDir.set('asc');
+    }
+  }
+
+  sortIcon(col: string): string {
+    if (this.sortCol() !== col) return 'unfold_more';
+    return this.sortDir() === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
 
   onSearch(event: Event): void {
     this.search.set((event.target as HTMLInputElement).value);
