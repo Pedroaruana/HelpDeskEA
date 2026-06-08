@@ -20,6 +20,16 @@ Esse projeto também foi minha entrada no Angular de verdade. Aprendi bastante n
 
 ---
 
+## Screenshots
+
+![Dashboard](screenshots/homehouse.png)
+
+![Lista de Chamados](screenshots/chamados.png)
+
+![Novo Chamado](screenshots/novochamado.png)
+
+---
+
 ## Funcionalidades
 
 - **Dashboard** — métricas de chamados em tempo real: abertos, em andamento, resolvidos e críticos
