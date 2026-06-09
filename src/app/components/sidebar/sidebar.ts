@@ -33,6 +33,10 @@ import { TicketService } from '../../services/ticket.service';
           <mat-icon>add_circle</mat-icon>
           <span>Novo Chamado</span>
         </a>
+        <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+          <mat-icon>account_circle</mat-icon>
+          <span>Meu Perfil</span>
+        </a>
       </nav>
 
       <div class="sidebar-footer">
