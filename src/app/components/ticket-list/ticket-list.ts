@@ -55,6 +55,12 @@ const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolv
           <option value="access">Acesso</option>
           <option value="other">Outros</option>
         </select>
+        @if (hasFilters()) {
+          <button class="btn-clear" (click)="clearFilters()">
+            <mat-icon>close</mat-icon>
+            Limpar filtros
+          </button>
+        }
       </div>
 
       <div class="ticket-table">
@@ -251,6 +257,15 @@ const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolv
       .date-ago { font-size: 12px; color: var(--text-muted); font-weight: 500; }
       .date-fmt { font-size: 11px; color: var(--text-faint); }
     }
+    .btn-clear {
+      display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+      border-radius: 8px; border: 1px solid rgba(239,68,68,0.25);
+      background: rgba(239,68,68,0.08); color: #f87171;
+      font-size: 13px; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+      mat-icon { font-size: 15px; width: 15px; height: 15px; }
+      &:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.4); }
+    }
+
     .col-arrow { color: var(--text-dim); display: flex; align-items: center; }
 
     .empty-state {
@@ -323,6 +338,17 @@ export class TicketListComponent {
   sortIcon(col: string): string {
     if (this.sortCol() !== col) return 'unfold_more';
     return this.sortDir() === 'asc' ? 'arrow_upward' : 'arrow_downward';
+  }
+
+  hasFilters = computed(() =>
+    !!this.search() || !!this.statusFilter() || !!this.priorityFilter() || !!this.categoryFilter()
+  );
+
+  clearFilters(): void {
+    this.search.set('');
+    this.statusFilter.set('');
+    this.priorityFilter.set('');
+    this.categoryFilter.set('');
   }
 
   onSearch(event: Event): void {
