@@ -40,13 +40,13 @@ import { TicketService } from '../../services/ticket.service';
       </nav>
 
       <div class="sidebar-footer">
-        <div class="user-info">
+        <a routerLink="/profile" class="user-info" title="Ver meu perfil">
           <div class="avatar">PT</div>
           <div class="user-details">
             <span class="user-name">Pedro Técnico</span>
             <span class="user-role">Suporte T.I</span>
           </div>
-        </div>
+        </a>
       </div>
     </aside>
   `,
@@ -140,6 +140,12 @@ import { TicketService } from '../../services/ticket.service';
       display: flex;
       align-items: center;
       gap: 10px;
+      text-decoration: none;
+      border-radius: 10px;
+      padding: 4px;
+      margin: -4px;
+      transition: background 0.2s;
+      &:hover { background: rgba(99,102,241,0.1); }
     }
 
     .avatar {
