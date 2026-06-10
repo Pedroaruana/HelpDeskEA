@@ -3,13 +3,14 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from './components/sidebar/sidebar';
 import { TopbarComponent } from './components/topbar/topbar';
+import { ChatWidgetComponent } from './components/chat-widget/chat-widget';
 import { TicketService } from './services/ticket.service';
 import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SidebarComponent, TopbarComponent, MatIconModule],
+  imports: [RouterOutlet, RouterLink, SidebarComponent, TopbarComponent, MatIconModule, ChatWidgetComponent],
   template: `
     <div class="app-shell">
       <app-sidebar />
@@ -39,6 +40,8 @@ import { ThemeService } from './services/theme.service';
         </main>
       </div>
     </div>
+
+    <app-chat-widget />
   `,
   styles: [`
     .app-shell {
