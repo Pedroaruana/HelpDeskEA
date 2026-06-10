@@ -45,3 +45,7 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# Backend
+helpdesk-api/node_modules/
+helpdesk-api/.env
