@@ -346,7 +346,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   }
 
   updateStatus(status: TicketStatus) {
-    this.svc.updateStatus(this.ticketId(), status);
+    this.svc.updateStatus(this.ticketId(), status).subscribe();
   }
 
   addComment() {
@@ -369,8 +369,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       ref.afterClosed().subscribe(confirmed => {
         if (confirmed) {
-          this.svc.deleteTicket(this.ticketId());
-          this.router.navigate(['/tickets']);
+          this.svc.deleteTicket(this.ticketId()).subscribe(() => this.router.navigate(['/tickets']));
         }
       })
     );
