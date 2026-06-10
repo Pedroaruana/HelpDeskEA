@@ -228,7 +228,7 @@ export class NewTicketComponent {
 
   submit() {
     if (!this.isValid()) return;
-    const ticket = this.svc.createTicket({
+    this.svc.createTicket({
       title: this.form.title.trim(),
       description: this.form.description.trim(),
       requester: this.form.requester.trim(),
@@ -236,7 +236,6 @@ export class NewTicketComponent {
       priority: this.form.priority,
       category: this.form.category,
       status: 'open',
-    });
-    this.router.navigate(['/tickets', ticket.id]);
+    }).subscribe(ticket => this.router.navigate(['/tickets', ticket.id]));
   }
 }

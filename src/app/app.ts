@@ -1,21 +1,24 @@
 import { Component, inject, computed, signal } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from './components/sidebar/sidebar';
 import { TopbarComponent } from './components/topbar/topbar';
 import { ChatWidgetComponent } from './components/chat-widget/chat-widget';
 import { TicketService } from './services/ticket.service';
 import { ThemeService } from './services/theme.service';
+import { AuthService } from './services/auth.service';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, RouterLink, SidebarComponent, TopbarComponent, MatIconModule, ChatWidgetComponent],
   template: `
-    <div class="app-shell">
-      <app-sidebar />
-      <div class="content-wrap">
-        <app-topbar />
+    @if (isShell()) {
+      <div class="app-shell">
+        <app-sidebar />
+        <div class="content-wrap">
+          <app-topbar />
 
         @if (criticalCount() > 0 && !dismissed()) {
           <div class="critical-banner">
@@ -35,13 +38,15 @@ import { ThemeService } from './services/theme.service';
           </div>
         }
 
-        <main class="main-content">
-          <router-outlet />
-        </main>
+          <main class="main-content">
+            <router-outlet />
+          </main>
+        </div>
       </div>
-    </div>
-
-    <app-chat-widget />
+      <app-chat-widget />
+    } @else {
+      <router-outlet />
+    }
   `,
   styles: [`
     .app-shell {
@@ -132,9 +137,20 @@ import { ThemeService } from './services/theme.service';
 })
 export class App {
   private svc = inject(TicketService);
-  readonly theme = inject(ThemeService); // inicializa o serviço e aplica o tema salvo
+  readonly theme = inject(ThemeService);
+  readonly auth = inject(AuthService);
+  private router = inject(Router);
+
   dismissed = signal(false);
+  isShell = signal(true);
+
   criticalCount = computed(() =>
     this.svc.tickets().filter(t => t.priority === 'critical' && t.status !== 'resolved' && t.status !== 'closed').length
   );
+
+  constructor() {
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
+      this.isShell.set(!e.urlAfterRedirects.startsWith('/login'));
+    });
+  }
 }
