@@ -4,6 +4,8 @@
 
 ![Angular](https://img.shields.io/badge/Angular-17+-DD0031?style=flat&logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-4169E1?style=flat&logo=postgresql&logoColor=white)
 ![Angular Material](https://img.shields.io/badge/Angular%20Material-17+-757575?style=flat&logo=material-design&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=flat&logo=github-actions&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat)
@@ -12,11 +14,13 @@
 
 ## Sobre o projeto
 
-Trabalho com suporte de T.I e sempre tive uma reclamação com os sistemas que a gente usa no dia a dia: são lentos, feios ou cheios de coisa que ninguém usa. Quis construir algo do zero que fizesse sentido pra mim — simples, rápido e com uma interface que não desse vergonha de mostrar.
+Trabalhei com suporte de T.I e sempre tive uma reclamação com os sistemas que a gente usa no dia a dia: são lentos ou cheios de coisa que ninguém usa. Quis construir algo do zero que fizesse sentido pra mim  — simples, rápido e com uma interface que não desse vergonha de mostrar.
 
-O HelpDesk EA é um sistema para abertura e acompanhamento de chamados de suporte. Ele tem dashboard com métricas, lista de chamados com filtros, detalhe com linha do tempo e comentários, formulário de abertura e busca global. Tudo com tema escuro e claro, deploy automático via GitHub Actions, e código organizado com Angular 17.
+O HelpDesk EA é um sistema completo para abertura e acompanhamento de chamados de suporte, com frontend em Angular e backend próprio em Node.js conectado a um banco PostgreSQL real. Os dados persistem entre sessões, tem autenticação com login e JWT, e o backend fica hospedado no Render.
 
-Esse projeto também foi minha entrada no Angular de verdade. Aprendi bastante na prática.
+Ele tem dashboard com métricas, lista de chamados com filtros, detalhe com linha do tempo e comentários, formulário de abertura, busca global e chat de suporte virtual. Tudo com tema escuro e claro e deploy automático via GitHub Actions.
+
+Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs de verdade. Aprendi bastante na prática.
 
 ---
 
@@ -32,14 +36,19 @@ Esse projeto também foi minha entrada no Angular de verdade. Aprendi bastante n
 
 ## Funcionalidades
 
+- **Login com autenticação JWT** — acesso protegido com token salvo no navegador
 - **Dashboard** — métricas de chamados em tempo real: abertos, em andamento, resolvidos e críticos
 - **Lista de chamados** — tabela com busca por texto e filtros por status, prioridade e categoria
+- **Ordenação por coluna** — clica no cabeçalho para ordenar a tabela
 - **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
 - **Novo chamado** — formulário de abertura com seleção de categoria e prioridade
 - **Busca global** — campo no topo que encontra qualquer chamado pelo título, ID ou solicitante
 - **Excluir chamado** — com confirmação para evitar acidentes
 - **Notificação de críticos** — banner de alerta quando há chamados críticos em aberto
 - **Tema claro/escuro** — toggle salvo automaticamente no navegador
+- **Chat de suporte virtual** — assistente flutuante com respostas automáticas para dúvidas comuns
+- **Contador de tempo** — mostra há quanto tempo cada chamado está aberto
+- **Perfil do técnico** — estatísticas e chamados atribuídos
 
 ---
 
@@ -51,8 +60,12 @@ Esse projeto também foi minha entrada no Angular de verdade. Aprendi bastante n
 | Angular Material | Componentes prontos com visual consistente |
 | TypeScript | Tipagem forte, menos bug em produção |
 | Angular Signals | Estado reativo sem RxJS desnecessário |
+| Node.js + Express | Backend próprio com API REST completa |
+| PostgreSQL (Neon) | Banco de dados real na nuvem, gratuito |
+| JWT | Autenticação segura entre frontend e backend |
+| Render | Hospedagem do backend, gratuita e estável |
 | GitHub Actions | CI/CD automático: lint → build → deploy |
-| GitHub Pages | Hospedagem gratuita, deploy sem complicação |
+| GitHub Pages | Hospedagem do frontend, deploy sem complicação |
 
 ---
 
@@ -73,18 +86,31 @@ Algumas coisas que não foram fáceis:
 ## Arquitetura
 
 ```
-src/
-├── app/
-│   ├── models/           # Tipos e interfaces (Ticket, Comment...)
-│   ├── services/         # Lógica de negócio com Signals
-│   └── components/
-│       ├── sidebar/      # Menu lateral
-│       ├── topbar/       # Barra superior com busca e toggle de tema
-│       ├── dashboard/    # Tela principal com estatísticas
-│       ├── ticket-list/  # Lista com filtros
-│       ├── ticket-detail/# Detalhe e gerenciamento do chamado
-│       ├── new-ticket/   # Formulário de abertura
-│       └── confirm-dialog/ # Modal de confirmação reutilizável
+HelpDeskEA/
+├── src/                        # Frontend Angular
+│   └── app/
+│       ├── models/             # Tipos e interfaces (Ticket, Comment...)
+│       ├── services/           # TicketService, AuthService, ThemeService
+│       ├── guards/             # Proteção de rotas autenticadas
+│       ├── interceptors/       # Interceptor HTTP para JWT
+│       ├── environments/       # URLs de dev e produção
+│       └── components/
+│           ├── login/          # Tela de login
+│           ├── sidebar/        # Menu lateral
+│           ├── topbar/         # Barra superior com busca e toggle de tema
+│           ├── dashboard/      # Tela principal com estatísticas
+│           ├── ticket-list/    # Lista com filtros e ordenação
+│           ├── ticket-detail/  # Detalhe e gerenciamento do chamado
+│           ├── new-ticket/     # Formulário de abertura
+│           ├── profile/        # Perfil do técnico
+│           ├── chat-widget/    # Chat de suporte virtual flutuante
+│           └── confirm-dialog/ # Modal de confirmação reutilizável
+└── helpdesk-api/               # Backend Node.js
+    ├── src/
+│   ├── routes/             # tickets.js, auth.js
+│   └── middleware/         # Verificação JWT
+    ├── index.js            # Entrada da aplicação
+    └── seed.js             # Dados iniciais
 ```
 
 ---
@@ -101,8 +127,9 @@ A cada `push` na branch `main`:
 
 ## Como rodar localmente
 
-Precisar ter Node.js 18+ e Angular CLI instalados.
+Precisa ter Node.js 18+ e Angular CLI instalados.
 
+**Frontend:**
 ```bash
 git clone https://github.com/Pedroaruana/HelpDeskEA.git
 cd HelpDeskEA
@@ -110,7 +137,19 @@ npm install
 npm start
 ```
 
-Abre no navegador: **http://localhost:4200**
+**Backend:**
+```bash
+cd helpdesk-api
+npm install
+# crie um arquivo .env com base no .env.example
+npm run dev
+```
+
+Frontend: **http://localhost:4200** | Backend: **http://localhost:3001**
+
+**Login de demonstração:**
+- E-mail: `pedro@helpdeskea.com`
+- Senha: `123456`
 
 ---
 
