@@ -1,6 +1,5 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
 interface User {
@@ -20,7 +19,7 @@ export class AuthService {
 
   isLoggedIn = computed(() => !!this.token());
 
-  constructor(private http: HttpClient, private router: Router) {}
+  private http = inject(HttpClient);
 
   login(email: string, password: string) {
     return this.http.post<{ token: string; user: User }>(
@@ -36,12 +35,22 @@ export class AuthService {
     this.currentUser.set(user);
   }
 
-  logout() {
+  clearSession() {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_KEY);
     this.token.set(null);
     this.currentUser.set(null);
-    this.router.navigate(['/login']);
+  }
+
+  isTokenValid(): boolean {
+    const token = this.token();
+    if (!token) return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
   }
 
   getToken(): string | null {

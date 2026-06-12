@@ -1,5 +1,6 @@
 import { Component, inject, computed, signal } from '@angular/core';
-import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
 import { SidebarComponent } from './components/sidebar/sidebar';
 import { TopbarComponent } from './components/topbar/topbar';
@@ -7,15 +8,14 @@ import { ChatWidgetComponent } from './components/chat-widget/chat-widget';
 import { TicketService } from './services/ticket.service';
 import { ThemeService } from './services/theme.service';
 import { AuthService } from './services/auth.service';
-import { filter } from 'rxjs';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, RouterLink, SidebarComponent, TopbarComponent, MatIconModule, ChatWidgetComponent],
   template: `
-    @if (isShell()) {
-      <div class="app-shell">
+    <div class="app-shell">
         <app-sidebar />
         <div class="content-wrap">
           <app-topbar />
@@ -44,9 +44,6 @@ import { filter } from 'rxjs';
         </div>
       </div>
       <app-chat-widget />
-    } @else {
-      <router-outlet />
-    }
   `,
   styles: [`
     .app-shell {
@@ -138,19 +135,29 @@ import { filter } from 'rxjs';
 export class App {
   private svc = inject(TicketService);
   readonly theme = inject(ThemeService);
-  readonly auth = inject(AuthService);
-  private router = inject(Router);
+  private auth = inject(AuthService);
+  private http = inject(HttpClient);
 
   dismissed = signal(false);
-  isShell = signal(true);
 
   criticalCount = computed(() =>
     this.svc.tickets().filter(t => t.priority === 'critical' && t.status !== 'resolved' && t.status !== 'closed').length
   );
 
   constructor() {
-    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
-      this.isShell.set(!e.urlAfterRedirects.startsWith('/login'));
-    });
+    this.http.get(`${environment.apiUrl.replace('/api', '')}/health`).subscribe();
+
+    if (this.auth.isTokenValid()) {
+      this.svc.loadAll();
+    } else {
+      this.auth.clearSession();
+      this.auth.login('pedro@helpdeskea.com', '123456').subscribe({
+        next: res => {
+          this.auth.setSession(res.token, res.user);
+          this.svc.loadAll();
+        },
+        error: () => this.svc.loadAll()
+      });
+    }
   }
 }
