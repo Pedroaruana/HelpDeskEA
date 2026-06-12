@@ -36,7 +36,7 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 
 ## Funcionalidades
 
-- **Login com autenticação JWT** — acesso protegido com token salvo no navegador
+- **Autenticação JWT** — token gerenciado automaticamente, dados protegidos entre frontend e backend
 - **Dashboard** — métricas de chamados em tempo real: abertos, em andamento, resolvidos e críticos
 - **Lista de chamados** — tabela com busca por texto e filtros por status, prioridade e categoria
 - **Ordenação por coluna** — clica no cabeçalho para ordenar a tabela
@@ -64,6 +64,7 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 | PostgreSQL (Neon) | Banco de dados real na nuvem, gratuito |
 | JWT | Autenticação segura entre frontend e backend |
 | Render | Hospedagem do backend, gratuita e estável |
+| UptimeRobot | Monitoramento do backend, mantém o servidor sempre ativo |
 | GitHub Actions | CI/CD automático: lint → build → deploy |
 | GitHub Pages | Hospedagem do frontend, deploy sem complicação |
 
@@ -91,11 +92,9 @@ HelpDeskEA/
 │   └── app/
 │       ├── models/             # Tipos e interfaces (Ticket, Comment...)
 │       ├── services/           # TicketService, AuthService, ThemeService
-│       ├── guards/             # Proteção de rotas autenticadas
 │       ├── interceptors/       # Interceptor HTTP para JWT
 │       ├── environments/       # URLs de dev e produção
 │       └── components/
-│           ├── login/          # Tela de login
 │           ├── sidebar/        # Menu lateral
 │           ├── topbar/         # Barra superior com busca e toggle de tema
 │           ├── dashboard/      # Tela principal com estatísticas
@@ -146,10 +145,6 @@ npm run dev
 ```
 
 Frontend: **http://localhost:4200** | Backend: **http://localhost:3001**
-
-**Login de demonstração:**
-- E-mail: `pedro@helpdeskea.com`
-- Senha: `123456`
 
 ---
 
