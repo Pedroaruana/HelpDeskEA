@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { Ticket, TicketStatus, DashboardStats } from '../models/ticket.model';
@@ -60,9 +60,7 @@ export class TicketService {
     };
   });
 
-  constructor(private http: HttpClient) {
-    this.loadAll();
-  }
+  private http = inject(HttpClient);
 
   loadAll() {
     this.loading.set(true);
