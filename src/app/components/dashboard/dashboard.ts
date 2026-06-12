@@ -1,4 +1,6 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, AfterViewInit, ViewChild, ElementRef, effect } from '@angular/core';
+import { Chart, registerables } from 'chart.js';
+Chart.register(...registerables);
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +24,45 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
           Novo Chamado
         </a>
       </header>
+
+      @if (loading()) {
+        <div class="stats-grid">
+          @for (i of skeletons; track i) {
+            <div class="stat-card skeleton-card">
+              <div class="sk sk-icon"></div>
+              <div class="sk-info">
+                <div class="sk sk-value"></div>
+                <div class="sk sk-label"></div>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="bottom-grid">
+          <div class="card">
+            <div class="card-header"><div class="sk sk-title"></div></div>
+            @for (i of skeletonRows; track i) {
+              <div class="sk-ticket-row">
+                <div class="sk sk-id"></div>
+                <div class="sk-ticket-info">
+                  <div class="sk sk-line-lg"></div>
+                  <div class="sk sk-line-sm"></div>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="sk sk-title"></div></div>
+            <div class="category-list">
+              @for (i of skeletonRows; track i) {
+                <div class="sk-cat-row">
+                  <div class="sk sk-cat-label"></div>
+                  <div class="sk sk-bar"></div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      } @else {
 
       <div class="stats-grid">
         <div class="stat-card total">
@@ -113,6 +154,27 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
           </div>
         </div>
       </div>
+
+      <div class="charts-grid">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h2>Chamados por Semana</h2>
+          </div>
+          <div class="chart-wrap">
+            <canvas #weeklyChart></canvas>
+          </div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-header">
+            <h2>Distribuição por Status</h2>
+          </div>
+          <div class="chart-wrap donut-wrap">
+            <canvas #statusChart></canvas>
+          </div>
+        </div>
+      </div>
+
+      }
     </div>
   `,
   styles: [`
@@ -258,11 +320,81 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
     .cat-bar { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); border-radius: 99px; transition: width 0.6s ease; }
 
     .cat-count { font-size: 13px; font-weight: 600; color: var(--text-secondary); width: 20px; text-align: right; flex-shrink: 0; }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .chart-card { padding-bottom: 20px; }
+
+    .chart-wrap {
+      padding: 0 20px 8px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+    }
+
+    .donut-wrap {
+      justify-content: center;
+      height: 220px;
+    }
+
+    .chart-wrap canvas { width: 100% !important; }
+
+    @keyframes shimmer {
+      0% { background-position: -600px 0; }
+      100% { background-position: 600px 0; }
+    }
+
+    .sk {
+      background: linear-gradient(90deg, var(--bg-card) 25%, var(--border) 50%, var(--bg-card) 75%);
+      background-size: 600px 100%;
+      animation: shimmer 1.4s infinite linear;
+      border-radius: 8px;
+    }
+
+    .skeleton-card {
+      pointer-events: none;
+    }
+
+    .sk-icon { width: 52px; height: 52px; border-radius: 12px; flex-shrink: 0; }
+    .sk-info { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .sk-value { height: 28px; width: 48px; border-radius: 6px; }
+    .sk-label { height: 12px; width: 90px; border-radius: 6px; }
+    .sk-title { height: 16px; width: 140px; border-radius: 6px; }
+
+    .sk-ticket-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .sk-id { width: 48px; height: 22px; border-radius: 6px; flex-shrink: 0; }
+    .sk-ticket-info { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .sk-line-lg { height: 13px; width: 65%; border-radius: 6px; }
+    .sk-line-sm { height: 11px; width: 40%; border-radius: 6px; }
+
+    .sk-cat-row { display: flex; align-items: center; gap: 12px; padding: 0 4px; }
+    .sk-cat-label { width: 100px; height: 13px; border-radius: 6px; flex-shrink: 0; }
+    .sk-bar { flex: 1; height: 6px; border-radius: 99px; }
   `]
 })
-export class DashboardComponent {
+export class DashboardComponent implements AfterViewInit {
   private svc = inject(TicketService);
   stats = this.svc.stats;
+  loading = this.svc.loading;
+  skeletons = [1,2,3,4,5,6];
+  skeletonRows = [1,2,3,4,5];
+
+  @ViewChild('weeklyChart') weeklyRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('statusChart') statusRef!: ElementRef<HTMLCanvasElement>;
+
+  private weeklyChart: Chart | null = null;
+  private statusChart: Chart | null = null;
 
   recentTickets = computed(() =>
     [...this.svc.tickets()].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 5)
@@ -284,4 +416,103 @@ export class DashboardComponent {
     });
   });
 
+  constructor() {
+    effect(() => {
+      const tickets = this.svc.tickets();
+      if (tickets.length > 0) {
+        setTimeout(() => this.buildCharts(), 0);
+      }
+    });
+  }
+
+  ngAfterViewInit() {
+    if (this.svc.tickets().length > 0) {
+      setTimeout(() => this.buildCharts(), 0);
+    }
+  }
+
+  private buildCharts() {
+    if (!this.weeklyRef || !this.statusRef) return;
+    this.buildWeeklyChart();
+    this.buildStatusChart();
+  }
+
+  private buildWeeklyChart() {
+    const tickets = this.svc.tickets();
+    const weeks: string[] = [];
+    const counts: number[] = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i * 7);
+      const start = new Date(d);
+      start.setDate(start.getDate() - start.getDay());
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setDate(end.getDate() + 7);
+
+      const label = start.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      const count = tickets.filter(t => t.createdAt >= start && t.createdAt < end).length;
+      weeks.push(label);
+      counts.push(count);
+    }
+
+    if (this.weeklyChart) this.weeklyChart.destroy();
+    this.weeklyChart = new Chart(this.weeklyRef.nativeElement, {
+      type: 'bar',
+      data: {
+        labels: weeks,
+        datasets: [{
+          label: 'Chamados abertos',
+          data: counts,
+          backgroundColor: 'rgba(99,102,241,0.7)',
+          borderColor: '#6366f1',
+          borderWidth: 2,
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8', font: { size: 11 }, stepSize: 1 }, beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  private buildStatusChart() {
+    const s = this.stats();
+    const inProgress = s.inProgress;
+    const open = s.open;
+    const resolved = s.resolved;
+
+    if (this.statusChart) this.statusChart.destroy();
+    this.statusChart = new Chart(this.statusRef.nativeElement, {
+      type: 'doughnut',
+      data: {
+        labels: ['Abertos', 'Em Andamento', 'Resolvidos'],
+        datasets: [{
+          data: [open, inProgress, resolved],
+          backgroundColor: ['rgba(251,191,36,0.85)', 'rgba(59,130,246,0.85)', 'rgba(34,197,94,0.85)'],
+          borderColor: ['#fbbf24', '#60a5fa', '#4ade80'],
+          borderWidth: 2,
+          hoverOffset: 6,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'bottom',
+            labels: { color: '#94a3b8', font: { size: 12 }, padding: 16, boxWidth: 12, borderRadius: 4 }
+          }
+        },
+        cutout: '65%',
+      }
+    });
+  }
 }
