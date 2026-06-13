@@ -180,6 +180,10 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
   styles: [`
     .page { padding: 32px; }
 
+    @media (max-width: 768px) {
+      .page { padding: 16px; }
+    }
+
     .page-header {
       display: flex;
       align-items: flex-start;
@@ -212,6 +216,10 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
       margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     }
 
     .stat-card {
@@ -248,6 +256,10 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       display: grid;
       grid-template-columns: 1fr 380px;
       gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .bottom-grid { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -326,6 +338,10 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       grid-template-columns: 1fr 340px;
       gap: 20px;
       margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .charts-grid { grid-template-columns: 1fr; }
     }
 
     .chart-card { padding-bottom: 20px; }

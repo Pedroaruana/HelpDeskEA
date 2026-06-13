@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { TicketService } from '../../services/ticket.service';
 import { ThemeService } from '../../services/theme.service';
+import { UIService } from '../../services/ui.service';
 import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pipe';
 
 @Component({
@@ -13,6 +14,9 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
   imports: [FormsModule, MatIconModule, MatRippleModule, PriorityLabelPipe, StatusLabelPipe],
   template: `
     <header class="topbar">
+      <button class="hamburger" (click)="ui.toggle()" matRipple>
+        <mat-icon>menu</mat-icon>
+      </button>
       <div class="search-container" [class.focused]="isFocused()">
         <mat-icon class="search-icon">search</mat-icon>
         <input
@@ -82,6 +86,28 @@ import { PriorityLabelPipe, StatusLabelPipe } from '../../pipes/ticket-labels.pi
       flex-shrink: 0;
       width: 100%;
       transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border: none;
+      background: none;
+      color: var(--text-faint);
+      border-radius: 10px;
+      cursor: pointer;
+      flex-shrink: 0;
+      mat-icon { font-size: 22px; width: 22px; height: 22px; }
+      &:hover { background: rgba(99,102,241,0.1); color: #818cf8; }
+    }
+
+    @media (max-width: 768px) {
+      .topbar { padding: 0 16px; }
+      .hamburger { display: flex; }
+      .date-info { display: none; }
     }
 
     .search-container {
@@ -281,6 +307,7 @@ export class TopbarComponent {
   private router = inject(Router);
   private el = inject(ElementRef);
   readonly theme = inject(ThemeService);
+  readonly ui = inject(UIService);
 
   query = '';
   isFocused = signal(false);
