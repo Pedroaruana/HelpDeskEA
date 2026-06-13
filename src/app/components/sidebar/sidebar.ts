@@ -3,13 +3,14 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { TicketService } from '../../services/ticket.service';
+import { UIService } from '../../services/ui.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive, MatIconModule, MatBadgeModule],
   template: `
-    <aside class="sidebar">
+    <aside class="sidebar" [class.open]="ui.sidebarOpen()">
       <div class="sidebar-logo">
         <mat-icon class="logo-icon">support_agent</mat-icon>
         <div class="logo-text">
@@ -19,21 +20,21 @@ import { TicketService } from '../../services/ticket.service';
       </div>
 
       <nav class="sidebar-nav">
-        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="ui.close()">
           <mat-icon>dashboard</mat-icon>
           <span>Dashboard</span>
         </a>
-        <a routerLink="/tickets" routerLinkActive="active" class="nav-item">
+        <a routerLink="/tickets" routerLinkActive="active" class="nav-item" (click)="ui.close()">
           <mat-icon [matBadge]="openCount() || null" matBadgeColor="warn" matBadgeSize="small">
             confirmation_number
           </mat-icon>
           <span>Chamados</span>
         </a>
-        <a routerLink="/new-ticket" routerLinkActive="active" class="nav-item">
+        <a routerLink="/new-ticket" routerLinkActive="active" class="nav-item" (click)="ui.close()">
           <mat-icon>add_circle</mat-icon>
           <span>Novo Chamado</span>
         </a>
-        <a routerLink="/profile" routerLinkActive="active" class="nav-item">
+        <a routerLink="/profile" routerLinkActive="active" class="nav-item" (click)="ui.close()">
           <mat-icon>account_circle</mat-icon>
           <span>Meu Perfil</span>
         </a>
@@ -61,7 +62,18 @@ import { TicketService } from '../../services/ticket.service';
       left: 0;
       top: 0;
       border-right: 1px solid rgba(255,255,255,0.06);
-      z-index: 100;
+      z-index: 200;
+      transition: transform 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
     }
 
     .sidebar-logo {
@@ -181,5 +193,6 @@ import { TicketService } from '../../services/ticket.service';
 })
 export class SidebarComponent {
   private svc = inject(TicketService);
+  readonly ui = inject(UIService);
   openCount = computed(() => this.svc.stats().open);
 }

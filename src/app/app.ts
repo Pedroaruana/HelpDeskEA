@@ -8,6 +8,7 @@ import { ChatWidgetComponent } from './components/chat-widget/chat-widget';
 import { TicketService } from './services/ticket.service';
 import { ThemeService } from './services/theme.service';
 import { AuthService } from './services/auth.service';
+import { UIService } from './services/ui.service';
 import { environment } from '../environments/environment';
 
 @Component({
@@ -15,6 +16,9 @@ import { environment } from '../environments/environment';
   standalone: true,
   imports: [RouterOutlet, RouterLink, SidebarComponent, TopbarComponent, MatIconModule, ChatWidgetComponent],
   template: `
+    @if (ui.sidebarOpen()) {
+      <div class="backdrop" (click)="ui.close()" (keydown.escape)="ui.close()" role="button" tabindex="0"></div>
+    }
     <div class="app-shell">
         <app-sidebar />
         <div class="content-wrap">
@@ -46,6 +50,18 @@ import { environment } from '../environments/environment';
       <app-chat-widget />
   `,
   styles: [`
+    .backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 150;
+    }
+
+    @media (max-width: 768px) {
+      .backdrop { display: block; }
+    }
+
     .app-shell {
       display: flex;
       min-height: 100vh;
@@ -58,6 +74,10 @@ import { environment } from '../environments/environment';
       display: flex;
       flex-direction: column;
       min-height: 100vh;
+    }
+
+    @media (max-width: 768px) {
+      .content-wrap { margin-left: 0; }
     }
 
     .critical-banner {
@@ -137,6 +157,7 @@ export class App {
   readonly theme = inject(ThemeService);
   private auth = inject(AuthService);
   private http = inject(HttpClient);
+  readonly ui = inject(UIService);
 
   dismissed = signal(false);
 
