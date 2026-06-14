@@ -21,10 +21,16 @@ const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolv
           <h1>Chamados</h1>
           <p class="subtitle">{{ filtered().length }} chamado(s) encontrado(s)</p>
         </div>
-        <a routerLink="/new-ticket" class="btn-primary" matRipple>
-          <mat-icon>add</mat-icon>
-          Novo Chamado
-        </a>
+        <div class="header-actions">
+          <button class="btn-csv" (click)="exportCSV()" matRipple>
+            <mat-icon>download</mat-icon>
+            Exportar CSV
+          </button>
+          <a routerLink="/new-ticket" class="btn-primary" matRipple>
+            <mat-icon>add</mat-icon>
+            Novo Chamado
+          </a>
+        </div>
       </header>
 
       <div class="filters-bar">
@@ -131,6 +137,17 @@ const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolv
       display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px;
       h1 { font-size: 28px; font-weight: 700; color: var(--text-primary); margin: 0; }
       .subtitle { color: var(--text-subtle); margin: 4px 0 0; font-size: 14px; }
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+
+    .btn-csv {
+      display: flex; align-items: center; gap: 8px; padding: 10px 18px;
+      background: var(--bg-card); border: 1px solid var(--border-md);
+      color: var(--text-muted); border-radius: 10px; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      &:hover { border-color: #6366f1; color: #818cf8; background: rgba(99,102,241,0.08); }
     }
 
     .btn-primary {
@@ -366,5 +383,27 @@ export class TicketListComponent {
   categoryIcon(c: string): string {
     const icons: Record<string, string> = { hardware: 'memory', software: 'code', network: 'wifi', access: 'lock', other: 'more_horiz' };
     return icons[c] ?? 'help';
+  }
+
+  exportCSV(): void {
+    const headers = ['ID', 'Título', 'Solicitante', 'Categoria', 'Prioridade', 'Status', 'Data de Abertura'];
+    const rows = this.filtered().map(t => [
+      t.id,
+      `"${t.title.replace(/"/g, '""')}"`,
+      `"${t.requester.replace(/"/g, '""')}"`,
+      t.category,
+      t.priority,
+      t.status,
+      t.createdAt.toLocaleDateString('pt-BR'),
+    ]);
+
+    const csv = [headers.join(';'), ...rows.map(r => r.join(';'))].join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `chamados_${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 }
