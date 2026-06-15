@@ -26,6 +26,10 @@ const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolv
             <mat-icon>download</mat-icon>
             Exportar CSV
           </button>
+          <a routerLink="/kanban" class="btn-kanban" matRipple title="Visualização Kanban">
+            <mat-icon>view_kanban</mat-icon>
+            Kanban
+          </a>
           <a routerLink="/new-ticket" class="btn-primary" matRipple>
             <mat-icon>add</mat-icon>
             Novo Chamado
@@ -146,6 +150,15 @@ const STATUS_ORDER: Record<string, number> = { open: 0, 'in-progress': 1, resolv
       background: var(--bg-card); border: 1px solid var(--border-md);
       color: var(--text-muted); border-radius: 10px; font-size: 14px; font-weight: 600;
       cursor: pointer; transition: all 0.2s;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      &:hover { border-color: #6366f1; color: #818cf8; background: rgba(99,102,241,0.08); }
+    }
+
+    .btn-kanban {
+      display: flex; align-items: center; gap: 8px; padding: 10px 18px;
+      background: var(--bg-card); border: 1px solid var(--border-md);
+      color: var(--text-muted); border-radius: 10px; text-decoration: none;
+      font-size: 14px; font-weight: 600; transition: all 0.2s;
       mat-icon { font-size: 18px; width: 18px; height: 18px; }
       &:hover { border-color: #6366f1; color: #818cf8; background: rgba(99,102,241,0.08); }
     }
