@@ -2,8 +2,9 @@ import { Component, inject, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
+import { CdkDragDrop, CdkDropList, CdkDrag, CdkDropListGroup, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
 import { TicketService } from '../../services/ticket.service';
-import { Ticket } from '../../models/ticket.model';
+import { Ticket, TicketStatus } from '../../models/ticket.model';
 import { PriorityLabelPipe, TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
 
 interface Column {
@@ -16,7 +17,7 @@ interface Column {
 @Component({
   selector: 'app-kanban',
   standalone: true,
-  imports: [RouterLink, MatIconModule, MatRippleModule, PriorityLabelPipe, TimeAgoPipe],
+  imports: [RouterLink, MatIconModule, MatRippleModule, CdkDropListGroup, CdkDropList, CdkDrag, CdkDragPlaceholder, PriorityLabelPipe, TimeAgoPipe],
   template: `
     <div class="page">
       <header class="page-header">
@@ -30,7 +31,7 @@ interface Column {
         </a>
       </header>
 
-      <div class="board">
+      <div class="board" cdkDropListGroup>
         @for (col of columns; track col.key) {
           <div class="column">
             <div class="col-header" [style.border-color]="col.color">
@@ -41,9 +42,16 @@ interface Column {
               </span>
             </div>
 
-            <div class="cards">
+            <div class="cards"
+              cdkDropList
+              [cdkDropListData]="col.key"
+              (cdkDropListDropped)="drop($event)"
+              [class.drag-over]="false">
               @for (ticket of byStatus(col.key); track ticket.id) {
-                <a [routerLink]="['/tickets', ticket.id]" class="card" matRipple>
+                <a [routerLink]="['/tickets', ticket.id]" class="card" cdkDrag [cdkDragData]="ticket">
+                  <div class="drag-handle" cdkDragHandle>
+                    <mat-icon>drag_indicator</mat-icon>
+                  </div>
                   <div class="card-top">
                     <span class="card-id">{{ ticket.id }}</span>
                     <span class="badge priority-{{ ticket.priority }}">{{ ticket.priority | priorityLabel }}</span>
@@ -56,6 +64,7 @@ interface Column {
                     </span>
                     <span class="card-time">{{ ticket.createdAt | timeAgo }}</span>
                   </div>
+                  <div *cdkDragPlaceholder class="drag-placeholder"></div>
                 </a>
               }
 
@@ -129,6 +138,11 @@ interface Column {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      transition: background 0.2s;
+    }
+
+    .cards.cdk-drop-list-dragging {
+      background: rgba(99,102,241,0.04);
     }
 
     .card {
@@ -139,7 +153,8 @@ interface Column {
       padding: 12px;
       text-decoration: none;
       transition: all 0.2s;
-      cursor: pointer;
+      cursor: grab;
+      position: relative;
 
       &:hover {
         border-color: #6366f1;
@@ -148,11 +163,45 @@ interface Column {
       }
     }
 
+    .card.cdk-drag-preview {
+      border: 1px solid #6366f1;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      border-radius: 10px;
+      background: var(--bg-card);
+      cursor: grabbing;
+      opacity: 0.95;
+    }
+
+    .card.cdk-drag-animating {
+      transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    .drag-placeholder {
+      background: rgba(99,102,241,0.08);
+      border: 2px dashed rgba(99,102,241,0.4);
+      border-radius: 10px;
+      height: 80px;
+    }
+
+    .drag-handle {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      color: var(--text-faint);
+      opacity: 0;
+      transition: opacity 0.2s;
+      cursor: grab;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+    }
+
+    .card:hover .drag-handle { opacity: 1; }
+
     .card-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 8px;
+      padding-right: 20px;
     }
 
     .card-id {
@@ -220,5 +269,12 @@ export class KanbanComponent {
 
   byStatus(status: string): Ticket[] {
     return this.svc.tickets().filter(t => t.status === status);
+  }
+
+  drop(event: CdkDragDrop<string>) {
+    const ticket: Ticket = event.item.data;
+    const newStatus = event.container.data as TicketStatus;
+    if (ticket.status === newStatus) return;
+    this.svc.updateStatus(ticket.id, newStatus).subscribe();
   }
 }
