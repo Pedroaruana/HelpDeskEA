@@ -15,5 +15,9 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/tickets', ticketsRouter);
 app.use('/api/auth', authRouter);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API rodando na porta ${PORT}`));
+if (require.main === module) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`API rodando na porta ${PORT}`));
+}
+
+module.exports = app;
