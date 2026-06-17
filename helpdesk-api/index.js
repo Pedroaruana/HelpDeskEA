@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const ticketsRouter = require('./src/routes/tickets');
 const authRouter = require('./src/routes/auth');
+const techniciansRouter = require('./src/routes/technicians');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/tickets', ticketsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/technicians', techniciansRouter);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
