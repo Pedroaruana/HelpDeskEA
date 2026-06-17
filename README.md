@@ -16,9 +16,9 @@
 
 Trabalhei com suporte de T.I e sempre tive uma reclamação com os sistemas que a gente usa no dia a dia: são lentos ou cheios de coisa que ninguém usa. Quis construir algo do zero que fizesse sentido pra mim  — simples, rápido e com uma interface que não desse vergonha de mostrar.
 
-O HelpDesk EA é um sistema completo para abertura e acompanhamento de chamados de suporte, com frontend em Angular e backend próprio em Node.js conectado a um banco PostgreSQL real. Os dados persistem entre sessões, tem autenticação com login e JWT, e o backend fica hospedado no Render.
+O HelpDesk EA é um sistema completo para abertura e acompanhamento de chamados de suporte, com frontend em Angular e backend próprio em Node.js conectado a um banco PostgreSQL real. Os dados persistem entre sessões, tem autenticação com JWT e o backend fica hospedado no Vercel.
 
-Ele tem dashboard com métricas, lista de chamados com filtros, detalhe com linha do tempo e comentários, formulário de abertura, busca global e chat de suporte virtual. Tudo com tema escuro e claro e deploy automático via GitHub Actions.
+Ele tem dashboard com gráficos e métricas, lista de chamados com filtros e exportação CSV, board Kanban com drag and drop, detalhe com linha do tempo e comentários, formulário de abertura, busca global e chat de suporte virtual. Tudo com tema escuro e claro, layout responsivo para mobile e deploy automático via GitHub Actions.
 
 Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs de verdade. Aprendi bastante na prática.
 
@@ -37,15 +37,20 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 ## Funcionalidades
 
 - **Autenticação JWT** — token gerenciado automaticamente, dados protegidos entre frontend e backend
-- **Dashboard** — métricas de chamados em tempo real: abertos, em andamento, resolvidos e críticos
+- **Autenticação JWT** — token gerenciado automaticamente, dados protegidos entre frontend e backend
+- **Dashboard** — métricas em tempo real com gráfico de barras (chamados por dia) e gráfico de rosca (distribuição por status)
+- **Skeleton loading** — animação de carregamento no dashboard enquanto os dados chegam
 - **Lista de chamados** — tabela com busca por texto e filtros por status, prioridade e categoria
 - **Ordenação por coluna** — clica no cabeçalho para ordenar a tabela
+- **Exportar CSV** — exporta a lista de chamados filtrada para planilha
+- **Kanban** — board visual com 4 colunas (Aberto, Em Andamento, Resolvido, Fechado) e drag and drop para mover chamados entre status
 - **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
 - **Novo chamado** — formulário de abertura com seleção de categoria e prioridade
 - **Busca global** — campo no topo que encontra qualquer chamado pelo título, ID ou solicitante
 - **Excluir chamado** — com confirmação para evitar acidentes
 - **Notificação de críticos** — banner de alerta quando há chamados críticos em aberto
 - **Tema claro/escuro** — toggle salvo automaticamente no navegador
+- **Layout responsivo** — funciona em mobile com menu hamburguer e sidebar deslizante
 - **Chat de suporte virtual** — assistente flutuante com respostas automáticas para dúvidas comuns
 - **Contador de tempo** — mostra há quanto tempo cada chamado está aberto
 - **Perfil do técnico** — estatísticas e chamados atribuídos
@@ -60,11 +65,12 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 | Angular Material | Componentes prontos com visual consistente |
 | TypeScript | Tipagem forte, menos bug em produção |
 | Angular Signals | Estado reativo sem RxJS desnecessário |
+| Angular CDK | Drag and drop nativo no Kanban |
+| Chart.js | Gráficos de barras e rosca no dashboard |
 | Node.js + Express | Backend próprio com API REST completa |
 | PostgreSQL (Neon) | Banco de dados real na nuvem, gratuito |
 | JWT | Autenticação segura entre frontend e backend |
-| Render | Hospedagem do backend, gratuita e estável |
-| UptimeRobot | Monitoramento do backend, mantém o servidor sempre ativo |
+| Vercel | Hospedagem do backend, sem cold start |
 | GitHub Actions | CI/CD automático: lint → build → deploy |
 | GitHub Pages | Hospedagem do frontend, deploy sem complicação |
 
@@ -103,6 +109,7 @@ HelpDeskEA/
 │           ├── new-ticket/     # Formulário de abertura
 │           ├── profile/        # Perfil do técnico
 │           ├── chat-widget/    # Chat de suporte virtual flutuante
+│           ├── kanban/         # Board Kanban com drag and drop
 │           └── confirm-dialog/ # Modal de confirmação reutilizável
 └── helpdesk-api/               # Backend Node.js
     ├── src/
