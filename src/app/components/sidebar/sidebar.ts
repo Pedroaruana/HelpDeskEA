@@ -34,6 +34,10 @@ import { UIService } from '../../services/ui.service';
           <mat-icon>view_kanban</mat-icon>
           <span>Kanban</span>
         </a>
+        <a routerLink="/technicians" routerLinkActive="active" class="nav-item" (click)="ui.close()">
+          <mat-icon>group</mat-icon>
+          <span>Técnicos</span>
+        </a>
         <a routerLink="/new-ticket" routerLinkActive="active" class="nav-item" (click)="ui.close()">
           <mat-icon>add_circle</mat-icon>
           <span>Novo Chamado</span>

@@ -101,6 +101,16 @@ export class TicketService {
     );
   }
 
+  assignTechnician(id: string, assignee: string | null) {
+    return this.http.patch<ApiTicket>(`${environment.apiUrl}/tickets/${id}`, { assignee }).pipe(
+      tap(updated => {
+        this._tickets.update(ts =>
+          ts.map(t => t.id === id ? { ...mapTicket(updated), comments: t.comments } : t)
+        );
+      })
+    );
+  }
+
   deleteTicket(id: string) {
     return this.http.delete(`${environment.apiUrl}/tickets/${id}`).pipe(
       tap(() => this._tickets.update(ts => ts.filter(t => t.id !== id)))

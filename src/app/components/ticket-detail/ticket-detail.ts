@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TicketService } from '../../services/ticket.service';
+import { TechnicianService } from '../../services/technician.service';
 import { TicketStatus } from '../../models/ticket.model';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
@@ -140,6 +141,16 @@ import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
                   </button>
                 }
               </div>
+            </div>
+
+            <div class="card assign-card">
+              <h3>Técnico Responsável</h3>
+              <select class="assign-select" [value]="ticket()!.assignee ?? ''" (change)="onAssign($event)">
+                <option value="">Não atribuído</option>
+                @for (tech of techSvc.technicians(); track tech.id) {
+                  <option [value]="tech.name">{{ tech.name }}</option>
+                }
+              </select>
             </div>
 
             <div class="card timeline-card">
@@ -286,6 +297,14 @@ import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
       &.status-closed.active, &.status-closed:hover { background: rgba(100,116,139,0.12); color: #94a3b8; border-color: rgba(100,116,139,0.2); }
     }
 
+    .assign-select {
+      width: 100%; padding: 10px 12px; background: var(--bg-input-deep);
+      border: 1px solid var(--border-md); border-radius: 8px;
+      color: var(--text-secondary); font-size: 13px; outline: none; cursor: pointer;
+      transition: border-color 0.2s;
+      &:focus { border-color: #6366f1; }
+    }
+
     .timeline { display: flex; flex-direction: column; gap: 0; }
     .timeline-item { display: flex; gap: 12px; position: relative; padding-bottom: 16px;
       &:last-child { padding-bottom: 0; }
@@ -326,6 +345,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private svc = inject(TicketService);
+  readonly techSvc = inject(TechnicianService);
   private dialog = inject(MatDialog);
   private subscriptions = new Subscription();
 
@@ -343,10 +363,16 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.ticketId.set(this.route.snapshot.paramMap.get('id') ?? '');
+    this.techSvc.loadAll().subscribe();
   }
 
   updateStatus(status: TicketStatus) {
     this.svc.updateStatus(this.ticketId(), status).subscribe();
+  }
+
+  onAssign(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.svc.assignTechnician(this.ticketId(), value || null).subscribe();
   }
 
   addComment() {

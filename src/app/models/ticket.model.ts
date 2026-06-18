@@ -24,6 +24,14 @@ export interface Comment {
   createdAt: Date;
 }
 
+export interface Technician {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  created_at: string;
+}
+
 export interface DashboardStats {
   total: number;
   open: number;
