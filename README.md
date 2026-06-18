@@ -44,6 +44,7 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 - **Ordenação por coluna** — clica no cabeçalho para ordenar a tabela
 - **Exportar CSV** — exporta a lista de chamados filtrada para planilha
 - **Kanban** — board visual com 4 colunas (Aberto, Em Andamento, Resolvido, Fechado) e drag and drop para mover chamados entre status
+- **Gestão de técnicos** — cadastro de técnicos com nome, email e senha. Atribuição de responsável direto no detalhe do chamado
 - **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
 - **Novo chamado** — formulário de abertura com seleção de categoria e prioridade
 - **Busca global** — campo no topo que encontra qualquer chamado pelo título, ID ou solicitante
@@ -110,6 +111,7 @@ HelpDeskEA/
 │           ├── profile/        # Perfil do técnico
 │           ├── chat-widget/    # Chat de suporte virtual flutuante
 │           ├── kanban/         # Board Kanban com drag and drop
+│           ├── technicians/    # Listagem e cadastro de técnicos
 │           └── confirm-dialog/ # Modal de confirmação reutilizável
 └── helpdesk-api/               # Backend Node.js
     ├── src/
