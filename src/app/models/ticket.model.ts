@@ -39,4 +39,6 @@ export interface DashboardStats {
   resolved: number;
   critical: number;
   avgResolutionHours: number;
+  byWeek: { label: string; count: number }[];
+  byCategory: { category: string; count: number }[];
 }

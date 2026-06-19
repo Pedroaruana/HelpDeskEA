@@ -417,32 +417,35 @@ export class DashboardComponent implements AfterViewInit {
   );
 
   categoryStats = computed(() => {
-    const tickets = this.svc.tickets();
-    const cats = [
-      { key: 'hardware', name: 'Hardware', icon: 'memory' },
-      { key: 'software', name: 'Software', icon: 'code' },
-      { key: 'network', name: 'Rede', icon: 'wifi' },
-      { key: 'access', name: 'Acesso', icon: 'lock' },
-      { key: 'other', name: 'Outros', icon: 'more_horiz' },
-    ];
-    const max = Math.max(...cats.map(c => tickets.filter(t => t.category === c.key).length), 1);
-    return cats.map(c => {
-      const count = tickets.filter(t => t.category === c.key).length;
-      return { ...c, count, pct: Math.round((count / max) * 100) };
-    });
+    const catMeta: Record<string, { name: string; icon: string }> = {
+      hardware: { name: 'Hardware', icon: 'memory' },
+      software: { name: 'Software', icon: 'code' },
+      network:  { name: 'Rede',     icon: 'wifi' },
+      access:   { name: 'Acesso',   icon: 'lock' },
+      other:    { name: 'Outros',   icon: 'more_horiz' },
+    };
+    const byCategory = this.svc.stats().byCategory;
+    const max = Math.max(...byCategory.map(c => c.count), 1);
+    return byCategory.map(c => ({
+      key: c.category,
+      name: catMeta[c.category]?.name ?? c.category,
+      icon: catMeta[c.category]?.icon ?? 'help',
+      count: c.count,
+      pct: Math.round((c.count / max) * 100),
+    }));
   });
 
   constructor() {
     effect(() => {
-      const tickets = this.svc.tickets();
-      if (tickets.length > 0) {
+      const stats = this.svc.stats();
+      if (stats.byWeek.length > 0) {
         setTimeout(() => this.buildCharts(), 0);
       }
     });
   }
 
   ngAfterViewInit() {
-    if (this.svc.tickets().length > 0) {
+    if (this.svc.stats().byWeek.length > 0) {
       setTimeout(() => this.buildCharts(), 0);
     }
   }
@@ -454,24 +457,9 @@ export class DashboardComponent implements AfterViewInit {
   }
 
   private buildWeeklyChart() {
-    const tickets = this.svc.tickets();
-    const weeks: string[] = [];
-    const counts: number[] = [];
-
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i * 7);
-      const start = new Date(d);
-      start.setDate(start.getDate() - start.getDay());
-      start.setHours(0, 0, 0, 0);
-      const end = new Date(start);
-      end.setDate(end.getDate() + 7);
-
-      const label = start.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
-      const count = tickets.filter(t => t.createdAt >= start && t.createdAt < end).length;
-      weeks.push(label);
-      counts.push(count);
-    }
+    const byWeek = this.svc.stats().byWeek;
+    const weeks = byWeek.map(w => w.label);
+    const counts = byWeek.map(w => w.count);
 
     if (this.weeklyChart) this.weeklyChart.destroy();
     this.weeklyChart = new Chart(this.weeklyRef.nativeElement, {
