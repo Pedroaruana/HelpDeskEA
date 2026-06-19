@@ -1,8 +1,13 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 import { Ticket, TicketStatus, DashboardStats } from '../models/ticket.model';
 import { environment } from '../../environments/environment';
+
+const EMPTY_STATS: DashboardStats = {
+  total: 0, open: 0, inProgress: 0, resolved: 0, critical: 0,
+  avgResolutionHours: 0, byWeek: [], byCategory: []
+};
 
 interface ApiTicket {
   id: string;
@@ -36,34 +41,19 @@ function mapTicket(t: ApiTicket): Ticket {
 @Injectable({ providedIn: 'root' })
 export class TicketService {
   private _tickets = signal<Ticket[]>([]);
+  private _stats = signal<DashboardStats>(EMPTY_STATS);
   loading = signal(false);
 
   tickets = this._tickets.asReadonly();
-
-  stats = computed<DashboardStats>(() => {
-    const tickets = this._tickets();
-    const resolved = tickets.filter(t => t.status === 'resolved' || t.status === 'closed');
-    const avgHours = resolved.length
-      ? resolved.reduce((acc, t) => {
-          if (t.resolvedAt) return acc + (t.resolvedAt.getTime() - t.createdAt.getTime()) / 3600000;
-          return acc;
-        }, 0) / resolved.length
-      : 0;
-
-    return {
-      total: tickets.length,
-      open: tickets.filter(t => t.status === 'open').length,
-      inProgress: tickets.filter(t => t.status === 'in-progress').length,
-      resolved: tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length,
-      critical: tickets.filter(t => t.priority === 'critical' && t.status !== 'resolved' && t.status !== 'closed').length,
-      avgResolutionHours: Math.round(avgHours * 10) / 10
-    };
-  });
+  stats = this._stats.asReadonly();
 
   private http = inject(HttpClient);
 
   loadAll() {
     this.loading.set(true);
+    this.http.get<DashboardStats>(`${environment.apiUrl}/stats`).pipe(
+      tap(data => this._stats.set(data))
+    ).subscribe();
     return this.http.get<ApiTicket[]>(`${environment.apiUrl}/tickets`).pipe(
       tap(data => {
         this._tickets.set(data.map(mapTicket));
