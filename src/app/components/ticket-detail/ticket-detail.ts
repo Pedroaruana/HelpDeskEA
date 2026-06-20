@@ -157,7 +157,7 @@ import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
                     <div class="attach-item">
                       <mat-icon class="attach-icon">{{ fileIcon(att.mimetype) }}</mat-icon>
                       <div class="attach-info">
-                        <a [href]="att.url" target="_blank" class="attach-name">{{ att.filename }}</a>
+                        <a [href]="downloadUrl(att.url)" target="_blank" class="attach-name">{{ att.filename }}</a>
                         <span class="attach-size">{{ fileSize(att.size) }}</span>
                       </div>
                       <button class="btn-remove-att" (click)="deleteAttachment(att.id)">
@@ -449,6 +449,10 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
 
   deleteAttachment(id: number) {
     this.attSvc.delete(id).subscribe();
+  }
+
+  downloadUrl(url: string): string {
+    return url.replace('/upload/', '/upload/fl_attachment/');
   }
 
   fileIcon(mimetype: string): string {

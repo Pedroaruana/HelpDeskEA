@@ -67,7 +67,10 @@ router.delete('/:id', async (req, res) => {
   try {
     const att = await pool.query('SELECT public_id FROM helpdesk.attachments WHERE id = $1', [req.params.id]);
     if (!att.rows.length) return res.status(404).json({ error: 'Anexo não encontrado' });
-    await cloudinary.uploader.destroy(att.rows[0].public_id, { resource_type: 'auto' });
+    try {
+      await cloudinary.uploader.destroy(att.rows[0].public_id, { resource_type: 'image' });
+      await cloudinary.uploader.destroy(att.rows[0].public_id, { resource_type: 'raw' });
+    } catch {}
     await pool.query('DELETE FROM helpdesk.attachments WHERE id = $1', [req.params.id]);
     res.json({ message: 'Anexo removido' });
   } catch (err) {
