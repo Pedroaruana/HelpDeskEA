@@ -8,6 +8,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TicketService } from '../../services/ticket.service';
 import { TechnicianService } from '../../services/technician.service';
+import { AttachmentService } from '../../services/attachment.service';
 import { TicketStatus } from '../../models/ticket.model';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog';
 import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
@@ -141,6 +142,31 @@ import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
                   </button>
                 }
               </div>
+            </div>
+
+            <div class="card attach-card">
+              <h3>Anexos ({{ attSvc.attachments().length }})</h3>
+              <label class="btn-upload" [class.loading]="uploading()">
+                <mat-icon>{{ uploading() ? 'hourglass_empty' : 'upload_file' }}</mat-icon>
+                {{ uploading() ? 'Enviando...' : 'Anexar arquivo' }}
+                <input type="file" hidden (change)="onFileChange($event)" [disabled]="uploading()" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" />
+              </label>
+              @if (attSvc.attachments().length > 0) {
+                <div class="attach-list">
+                  @for (att of attSvc.attachments(); track att.id) {
+                    <div class="attach-item">
+                      <mat-icon class="attach-icon">{{ fileIcon(att.mimetype) }}</mat-icon>
+                      <div class="attach-info">
+                        <a [href]="att.url" target="_blank" class="attach-name">{{ att.filename }}</a>
+                        <span class="attach-size">{{ fileSize(att.size) }}</span>
+                      </div>
+                      <button class="btn-remove-att" (click)="deleteAttachment(att.id)">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
             </div>
 
             <div class="card assign-card">
@@ -297,6 +323,42 @@ import { TimeAgoPipe } from '../../pipes/ticket-labels.pipe';
       &.status-closed.active, &.status-closed:hover { background: rgba(100,116,139,0.12); color: #94a3b8; border-color: rgba(100,116,139,0.2); }
     }
 
+    .btn-upload {
+      display: flex; align-items: center; gap: 8px; padding: 9px 14px;
+      background: var(--bg-base); border: 1px dashed var(--border-md);
+      border-radius: 8px; color: var(--text-muted); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 12px;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      &:hover { border-color: #6366f1; color: #818cf8; }
+      &.loading { opacity: 0.6; cursor: not-allowed; }
+    }
+
+    .attach-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .attach-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; background: var(--bg-base); border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .attach-icon { font-size: 18px; width: 18px; height: 18px; color: #6366f1; flex-shrink: 0; }
+
+    .attach-info { flex: 1; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .attach-name {
+      font-size: 12px; color: #818cf8; text-decoration: none; font-weight: 500;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      &:hover { text-decoration: underline; }
+    }
+    .attach-size { font-size: 11px; color: var(--text-faint); }
+
+    .btn-remove-att {
+      background: none; border: none; color: var(--text-dim); cursor: pointer;
+      display: flex; align-items: center; padding: 2px; border-radius: 4px;
+      transition: color 0.15s; flex-shrink: 0;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; }
+      &:hover { color: #f87171; }
+    }
+
     .assign-select {
       width: 100%; padding: 10px 12px; background: var(--bg-input-deep);
       border: 1px solid var(--border-md); border-radius: 8px;
@@ -346,6 +408,7 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private svc = inject(TicketService);
   readonly techSvc = inject(TechnicianService);
+  readonly attSvc = inject(AttachmentService);
   private dialog = inject(MatDialog);
   private subscriptions = new Subscription();
 
@@ -361,13 +424,43 @@ export class TicketDetailComponent implements OnInit, OnDestroy {
     { value: 'closed', label: 'Fechado', icon: 'cancel' },
   ];
 
+  uploading = signal(false);
+
   ngOnInit() {
-    this.ticketId.set(this.route.snapshot.paramMap.get('id') ?? '');
+    const id = this.route.snapshot.paramMap.get('id') ?? '';
+    this.ticketId.set(id);
     this.techSvc.loadAll().subscribe();
+    this.attSvc.loadByTicket(id).subscribe();
   }
 
   updateStatus(status: TicketStatus) {
     this.svc.updateStatus(this.ticketId(), status).subscribe();
+  }
+
+  onFileChange(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    this.uploading.set(true);
+    this.attSvc.upload(this.ticketId(), file).subscribe({
+      next: () => this.uploading.set(false),
+      error: () => this.uploading.set(false),
+    });
+  }
+
+  deleteAttachment(id: number) {
+    this.attSvc.delete(id).subscribe();
+  }
+
+  fileIcon(mimetype: string): string {
+    if (mimetype.startsWith('image/')) return 'image';
+    if (mimetype === 'application/pdf') return 'picture_as_pdf';
+    return 'attach_file';
+  }
+
+  fileSize(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   }
 
   onAssign(event: Event) {

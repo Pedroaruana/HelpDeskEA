@@ -24,6 +24,16 @@ export interface Comment {
   createdAt: Date;
 }
 
+export interface Attachment {
+  id: number;
+  ticket_id: string;
+  filename: string;
+  url: string;
+  mimetype: string;
+  size: number;
+  created_at: string;
+}
+
 export interface Technician {
   id: number;
   name: string;
