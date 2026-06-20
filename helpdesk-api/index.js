@@ -6,6 +6,7 @@ const ticketsRouter = require('./src/routes/tickets');
 const authRouter = require('./src/routes/auth');
 const techniciansRouter = require('./src/routes/technicians');
 const statsRouter = require('./src/routes/stats');
+const attachmentsRouter = require('./src/routes/attachments');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use('/api/tickets', ticketsRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/technicians', techniciansRouter);
 app.use('/api/stats', statsRouter);
+app.use('/api/attachments', attachmentsRouter);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 3000;
