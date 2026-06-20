@@ -31,14 +31,6 @@ pool.query(`
   )
 `).catch(() => {});
 
-const uploadToCloudinary = (buffer, options) =>
-  new Promise((resolve, reject) => {
-    cloudinary.uploader.upload_stream(options, (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
-    }).end(buffer);
-  });
-
 router.get('/:ticketId', async (req, res) => {
   try {
     const result = await pool.query(
@@ -54,7 +46,8 @@ router.get('/:ticketId', async (req, res) => {
 router.post('/:ticketId', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Nenhum arquivo enviado' });
   try {
-    const uploaded = await uploadToCloudinary(req.file.buffer, {
+    const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    const uploaded = await cloudinary.uploader.upload(dataUrl, {
       folder: 'helpdesk-ea',
       resource_type: 'auto',
       public_id: `${req.params.ticketId}_${Date.now()}`,

@@ -37,14 +37,14 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 ## Funcionalidades
 
 - **Autenticação JWT** — token gerenciado automaticamente, dados protegidos entre frontend e backend
-- **Autenticação JWT** — token gerenciado automaticamente, dados protegidos entre frontend e backend
-- **Dashboard** — métricas em tempo real com gráfico de barras (chamados por dia) e gráfico de rosca (distribuição por status)
+- **Dashboard** — métricas em tempo real com gráfico de barras (chamados por semana) e gráfico de rosca (distribuição por status), alimentados por rota `/stats` no backend
 - **Skeleton loading** — animação de carregamento no dashboard enquanto os dados chegam
 - **Lista de chamados** — tabela com busca por texto e filtros por status, prioridade e categoria
 - **Ordenação por coluna** — clica no cabeçalho para ordenar a tabela
 - **Exportar CSV** — exporta a lista de chamados filtrada para planilha
 - **Kanban** — board visual com 4 colunas (Aberto, Em Andamento, Resolvido, Fechado) e drag and drop para mover chamados entre status
 - **Gestão de técnicos** — cadastro de técnicos com nome, email e senha. Atribuição de responsável direto no detalhe do chamado
+- **Upload de anexos** — anexar prints e arquivos a um chamado, armazenados no Cloudinary
 - **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
 - **Novo chamado** — formulário de abertura com seleção de categoria e prioridade
 - **Busca global** — campo no topo que encontra qualquer chamado pelo título, ID ou solicitante
@@ -71,6 +71,7 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 | Node.js + Express | Backend próprio com API REST completa |
 | PostgreSQL (Neon) | Banco de dados real na nuvem, gratuito |
 | JWT | Autenticação segura entre frontend e backend |
+| Cloudinary | Armazenamento de anexos na nuvem |
 | Vercel | Hospedagem do backend, sem cold start |
 | GitHub Actions | CI/CD automático: lint → build → deploy |
 | GitHub Pages | Hospedagem do frontend, deploy sem complicação |
@@ -115,7 +116,7 @@ HelpDeskEA/
 │           └── confirm-dialog/ # Modal de confirmação reutilizável
 └── helpdesk-api/               # Backend Node.js
     ├── src/
-│   ├── routes/             # tickets.js, auth.js
+│   ├── routes/             # tickets.js, auth.js, stats.js, technicians.js, attachments.js
 │   └── middleware/         # Verificação JWT
     ├── index.js            # Entrada da aplicação
     └── seed.js             # Dados iniciais
