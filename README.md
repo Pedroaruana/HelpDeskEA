@@ -92,6 +92,9 @@ Algumas coisas que não foram fáceis:
 
 ---
 
+## Deploy Online do Backend:
+https://help-desk-ea.vercel.app/
+
 ## Arquitetura
 
 ```
