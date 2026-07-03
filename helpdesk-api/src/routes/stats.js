@@ -19,9 +19,9 @@ router.get('/', async (req, res) => {
         FROM helpdesk.tickets
       `),
       pool.query(`
-        SELECT ROUND(AVG(EXTRACT(EPOCH FROM (updated_at - created_at)) / 3600)::numeric, 1) AS avg_hours
+        SELECT ROUND(AVG(EXTRACT(EPOCH FROM (resolved_at - created_at)) / 3600)::numeric, 1) AS avg_hours
         FROM helpdesk.tickets
-        WHERE status IN ('resolved','closed')
+        WHERE status IN ('resolved','closed') AND resolved_at IS NOT NULL
       `),
       pool.query(`
         SELECT

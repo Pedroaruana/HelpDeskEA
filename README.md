@@ -45,6 +45,8 @@ Esse projeto também foi minha entrada no Angular e no desenvolvimento de APIs d
 - **Kanban** — board visual com 4 colunas (Aberto, Em Andamento, Resolvido, Fechado) e drag and drop para mover chamados entre status
 - **Gestão de técnicos** — cadastro de técnicos com nome, email e senha. Atribuição de responsável direto no detalhe do chamado
 - **Upload de anexos** — anexar prints e arquivos a um chamado, armazenados no Cloudinary
+- **Proteção contra spam** — limite de chamados criados por período, evita flood no sistema
+- **Isolamento de dados** — cada chamado novo só é visível para quem criou, protegendo a privacidade dos dados de teste
 - **Detalhe do chamado** — visualização completa com linha do tempo, comentários e alteração de status
 - **Novo chamado** — formulário de abertura com seleção de categoria e prioridade
 - **Busca global** — campo no topo que encontra qualquer chamado pelo título, ID ou solicitante

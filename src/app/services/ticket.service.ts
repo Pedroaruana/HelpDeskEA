@@ -20,6 +20,7 @@ interface ApiTicket {
   assignee: string | null;
   created_at: string;
   updated_at: string;
+  resolved_at: string | null;
 }
 
 function mapTicket(t: ApiTicket): Ticket {
@@ -34,6 +35,7 @@ function mapTicket(t: ApiTicket): Ticket {
     assignee: t.assignee ?? undefined,
     createdAt: new Date(t.created_at),
     updatedAt: new Date(t.updated_at),
+    resolvedAt: t.resolved_at ? new Date(t.resolved_at) : undefined,
     comments: [],
   };
 }

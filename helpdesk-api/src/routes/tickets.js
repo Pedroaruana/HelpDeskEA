@@ -1,4 +1,5 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const pool = require('../db');
 const authMiddleware = require('../middleware/auth');
 
@@ -6,10 +7,23 @@ const router = express.Router();
 
 router.use(authMiddleware);
 
+pool.query(`ALTER TABLE helpdesk.tickets ADD COLUMN IF NOT EXISTS client_id VARCHAR(64)`).catch(() => {});
+pool.query(`ALTER TABLE helpdesk.tickets ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMP`).catch(() => {});
+
+const createLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Muitos chamados criados em pouco tempo. Aguarde alguns minutos e tente novamente.' },
+});
+
 router.get('/', async (req, res) => {
+  const clientId = req.headers['x-client-id'] || null;
   try {
     const result = await pool.query(
-      'SELECT * FROM helpdesk.tickets ORDER BY created_at DESC'
+      'SELECT * FROM helpdesk.tickets WHERE client_id IS NULL OR client_id = $1 ORDER BY created_at DESC',
+      [clientId]
     );
     res.json(result.rows);
   } catch (err) {
@@ -18,10 +32,11 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
+  const clientId = req.headers['x-client-id'] || null;
   try {
     const result = await pool.query(
-      'SELECT * FROM helpdesk.tickets WHERE id = $1',
-      [req.params.id]
+      'SELECT * FROM helpdesk.tickets WHERE id = $1 AND (client_id IS NULL OR client_id = $2)',
+      [req.params.id, clientId]
     );
     if (!result.rows.length) return res.status(404).json({ error: 'Chamado não encontrado' });
     res.json(result.rows[0]);
@@ -30,8 +45,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', createLimiter, async (req, res) => {
   const { title, description, priority, category, requester, assignee } = req.body;
+  const clientId = req.headers['x-client-id'] || null;
   if (!title || !requester) {
     return res.status(400).json({ error: 'Título e solicitante são obrigatórios' });
   }
@@ -41,9 +57,9 @@ router.post('/', async (req, res) => {
     const id = `TK-${String(count).padStart(3, '0')}`;
 
     const result = await pool.query(
-      `INSERT INTO helpdesk.tickets (id, title, description, priority, category, requester, assignee)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [id, title, description || '', priority || 'medium', category || 'outros', requester, assignee || null]
+      `INSERT INTO helpdesk.tickets (id, title, description, priority, category, requester, assignee, client_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [id, title, description || '', priority || 'medium', category || 'outros', requester, assignee || null, clientId]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -53,6 +69,10 @@ router.post('/', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
   const { title, description, status, priority, category, assignee } = req.body;
+  const clientId = req.headers['x-client-id'] || null;
+  const resolvedAtUpdate = status
+    ? (status === 'resolved' || status === 'closed' ? new Date() : null)
+    : undefined;
   try {
     const result = await pool.query(
       `UPDATE helpdesk.tickets SET
@@ -62,9 +82,10 @@ router.patch('/:id', async (req, res) => {
         priority = COALESCE($4, priority),
         category = COALESCE($5, category),
         assignee = COALESCE($6, assignee),
+        resolved_at = CASE WHEN $7::boolean THEN $8::timestamp ELSE resolved_at END,
         updated_at = NOW()
-       WHERE id = $7 RETURNING *`,
-      [title, description, status, priority, category, assignee, req.params.id]
+       WHERE id = $9 AND (client_id IS NULL OR client_id = $10) RETURNING *`,
+      [title, description, status, priority, category, assignee, resolvedAtUpdate !== undefined, resolvedAtUpdate, req.params.id, clientId]
     );
     if (!result.rows.length) return res.status(404).json({ error: 'Chamado não encontrado' });
     res.json(result.rows[0]);
@@ -74,10 +95,11 @@ router.patch('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
+  const clientId = req.headers['x-client-id'] || null;
   try {
     const result = await pool.query(
-      'DELETE FROM helpdesk.tickets WHERE id = $1 RETURNING id',
-      [req.params.id]
+      'DELETE FROM helpdesk.tickets WHERE id = $1 AND (client_id IS NULL OR client_id = $2) RETURNING id',
+      [req.params.id, clientId]
     );
     if (!result.rows.length) return res.status(404).json({ error: 'Chamado não encontrado' });
     res.json({ message: 'Chamado removido' });

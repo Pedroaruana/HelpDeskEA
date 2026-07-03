@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -86,9 +86,16 @@ import { TicketPriority, TicketCategory } from '../../models/ticket.model';
             </div>
           </div>
 
+          @if (error()) {
+            <div class="alert-error">
+              <mat-icon>error_outline</mat-icon>
+              {{ error() }}
+            </div>
+          }
+
           <div class="form-actions">
             <a routerLink="/tickets" class="btn-cancel" matRipple>Cancelar</a>
-            <button type="submit" class="btn-submit" [disabled]="!isValid()" matRipple>
+            <button type="submit" class="btn-submit" [disabled]="!isValid() || submitting()" matRipple>
               <mat-icon>send</mat-icon>
               Abrir Chamado
             </button>
@@ -176,6 +183,13 @@ import { TicketPriority, TicketCategory } from '../../models/ticket.model';
         &.selected, &:hover { background: rgba(100,116,139,0.12); color: #94a3b8; border-color: rgba(100,116,139,0.3); } }
     }
 
+    .alert-error {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #f87171; margin-top: 16px;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+    }
+
     .form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
 
     .btn-cancel {
@@ -224,10 +238,15 @@ export class NewTicketComponent {
     { value: 'low' as TicketPriority, label: 'Baixo', icon: 'arrow_downward' },
   ];
 
+  error = signal('');
+  submitting = signal(false);
+
   isValid() { return this.form.title.trim() && this.form.description.trim() && this.form.requester.trim(); }
 
   submit() {
     if (!this.isValid()) return;
+    this.error.set('');
+    this.submitting.set(true);
     this.svc.createTicket({
       title: this.form.title.trim(),
       description: this.form.description.trim(),
@@ -236,6 +255,12 @@ export class NewTicketComponent {
       priority: this.form.priority,
       category: this.form.category,
       status: 'open',
-    }).subscribe(ticket => this.router.navigate(['/tickets', ticket.id]));
+    }).subscribe({
+      next: ticket => this.router.navigate(['/tickets', ticket.id]),
+      error: err => {
+        this.submitting.set(false);
+        this.error.set(err.error?.error || 'Erro ao criar chamado. Tente novamente.');
+      },
+    });
   }
 }
