@@ -438,7 +438,8 @@ export class DashboardComponent implements AfterViewInit {
   constructor() {
     effect(() => {
       const stats = this.svc.stats();
-      if (stats.byWeek.length > 0) {
+      const isLoading = this.svc.loading();
+      if (!isLoading && stats.byWeek.length > 0) {
         setTimeout(() => this.buildCharts(), 0);
       }
     });
